@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Video App</title>
+  <style media="screen">
+    * {
+      margin: 0;
+    }
+
+    #videoDiv {
+      display: grid;
+      /* grid-gap: 10px; */
+      height: 20vh;
+      /* position: relative; */
+      grid-template-columns: repeat(auto-fill, 20vh);
+      grid-auto-rows: 20vh;
+      background: #101010;
+    }
+
+    #hostDiv {
+      width: 80vw;
+      height: 80vh;
+      background: black;
+      align-items: center;
+    }
+
+    #chatDiv {
+      width: 20vw;
+      height: 100vh;
+      background: #050505;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-size: 30px;
+    }
+
+    button {
+      height: 30px;
+      width: 80px;
+      margin-top: 10px;
+      text-align: center;
+      border-radius: 10px;
+      outline: none;
+      border: none;
+      text-decoration: none;
+      background-color: red;
+      cursor: pointer;
+    }
+
+    #videoDiv video {
+      width: 20vh;
+      height: 20vh;
+      object-fit: cover;
+    }
+
+    #hostDiv video {
+      width: 80vw;
+      height: 80vh;
+      object-fit: contain;
+    }
+  </style>
+  <script type="text/javascript">
+    var roomID = "<%= RoomId %>"
+  </script>
+  <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
+  <script src="socket.io/socket.io.js" defer></script>
+  <script src="index.js" charset="utf-8" defer></script>
+</head>
+
+<body>
+  <div style="flex-direction: row;display: flex;">
+    <div style="flex-direction: column;display: flex;">
+      <div id="hostDiv"> </div>
+      <div id="videoDiv"> </div>
+    </div>
+    <div id="chatDiv">
+      <div style="margin: 20px;">Watch Party</div>
+      <div style="margin-top: -10px;margin-left: 25px;font-size: 20px;">Party Link</div>
+      <div style="background: #151515;margin:10px;padding:10px;padding-left:20px;margin-left:20px;margin-right:25px;font-size:20px;border-radius:15px;">
+        <a href="#">Party Link</a>
+      </div>
+      <div style="margin: 20px;">Live Chat</div>
+    </div>
+  </div>
+</body>
+
+</html>
