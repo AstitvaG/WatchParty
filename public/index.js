@@ -55,7 +55,7 @@ function joinRoom(name, room_id) {
     }
 }
 
-joinRoom(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), 'room')
+joinRoom(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), roomID)
 
 
 function addListeners() {

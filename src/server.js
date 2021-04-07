@@ -9,6 +9,7 @@ const path = require('path')
 const Room = require('./Room')
 const Peer = require('./Peer')
 
+
 const options = {
     key: fs.readFileSync(path.join(__dirname, config.sslKey), 'utf-8'),
     cert: fs.readFileSync(path.join(__dirname, config.sslCrt), 'utf-8')
@@ -16,19 +17,22 @@ const options = {
 
 const httpsServer = https.createServer(options, app)
 const io = require('socket.io')(httpsServer, {
-	cors: {
-		"origin": "*",
-		"methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-		"preflightContinue": false,
-		"optionsSuccessStatus": 204
-	}
+    cors: {
+        "origin": "*",
+        "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+        "preflightContinue": false,
+        "optionsSuccessStatus": 204
+    }
 });
 
 // app.use(express.static(path.join(__dirname, '..', 'public')))
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.get('/', (req, res) => {
-    res.render('index', { RoomId: 'rid' });
+    res.render('index', { RoomId: 'room' });
+});
+app.get('/:roomId', (req, res) => {
+    res.render('index', { RoomId: req.params.roomId });
 });
 
 httpsServer.listen(config.listenPort, () => {
@@ -105,11 +109,19 @@ io.on('connection', socket => {
         }
     })
 
+    socket.on('getNewRoom', (_, callback) => {
+
+        const getr = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3)
+        const getx = () => getr() + '-' + getr() + '-' + getr()
+        let room_id = getx()
+        while (roomList.has(room_id) || room_id.length != 11) room_id = getx()
+        callback(room_id);
+    })
+
     socket.on('join', ({
         room_id,
         name
     }, cb) => {
-
         console.log('---user joined--- \"' + room_id + '\": ' + name)
         if (!roomList.has(room_id)) {
             return cb({

@@ -1,11 +1,12 @@
 // Initialize butotn with users's prefered color
 
 
-let changeColor = document.getElementById("changeColor");
+let startStreaming = document.getElementById("startStreaming");
+let joinExisting = document.getElementById("joinExisting");
 var libsLoaded = false;
 
 // When the button is clicked, inject content.js into current page
-changeColor.addEventListener("click", async () => {
+startStreaming.addEventListener("click", async () => {
 	console.log("Libs", libsLoaded)
 	let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 	if (!window.libsLoaded)
@@ -24,3 +25,7 @@ changeColor.addEventListener("click", async () => {
 		files: ['content.js']
 	}, () => libsLoaded = true);
 });
+
+joinExisting.addEventListener("click", async () => {
+	window.open('https:\/\/localhost:3016', '_blank')
+})

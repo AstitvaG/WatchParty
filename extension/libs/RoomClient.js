@@ -1,7 +1,7 @@
 const mediaType = {
     audio: 'audioType',
     video: 'videoType',
-    screen: 'screenType'
+    screen: 'screenType',
 }
 const _EVENTS = {
     exitRoom: 'exitRoom',
@@ -302,7 +302,9 @@ class RoomClient {
         console.log('mediacontraints:', mediaConstraints)
         let stream;
         try {
-            stream = screen ? await navigator.mediaDevices.getDisplayMedia() : await navigator.mediaDevices.getUserMedia(mediaConstraints)
+            stream = screen
+                ? await navigator.mediaDevices.getDisplayMedia()
+                : await navigator.mediaDevices.getUserMedia(mediaConstraints)
             console.log(navigator.mediaDevices.getSupportedConstraints())
 
 
@@ -341,7 +343,6 @@ class RoomClient {
             if (!audio) {
                 elem = document.createElement('video')
                 elem.srcObject = stream
-                elem.muted = true
                 elem.id = producer.id
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
@@ -418,7 +419,6 @@ class RoomClient {
                 elem = document.createElement('video')
                 elem.srcObject = stream
                 elem.id = consumer.id
-                elem.muted = true
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
                 })
@@ -430,7 +430,6 @@ class RoomClient {
                 elem = document.createElement('audio')
                 elem.srcObject = stream
                 elem.id = consumer.id
-                elem.muted = true
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
                 })

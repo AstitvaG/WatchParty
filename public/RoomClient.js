@@ -339,7 +339,6 @@ class RoomClient {
             if (!audio) {
                 elem = document.createElement('video')
                 elem.srcObject = stream
-                elem.muted = true
                 elem.id = producer.id
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
@@ -416,14 +415,14 @@ class RoomClient {
                 elem = document.createElement('video')
                 elem.srcObject = stream
                 elem.id = consumer.id
-                elem.muted = true
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
                 })
                 // elem.playsinline = false
                 // elem.autoplay = true
                 // elem.className = "vid"
-                if (this.host_id == producer_id){
+                if (this.host_id == producer_id && this.hostVideoEl.children.length == 0) {
+                    let child = this.hostVideoEl.children
                     this.hostVideoEl.appendChild(elem)
                 }
                 else
@@ -432,7 +431,6 @@ class RoomClient {
                 elem = document.createElement('audio')
                 elem.srcObject = stream
                 elem.id = consumer.id
-                elem.muted = true
                 elem.addEventListener('loadedmetadata', () => {
                     elem.play()
                 })
