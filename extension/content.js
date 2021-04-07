@@ -1,44 +1,36 @@
 console.log("Modules loded")
-var socket = io("http://localhost:4000");
-var peer = new Peer();
-var vidStream, myId, roomId;
-socket.on('userJoined', id => {
-    console.log("new user joined", id)
-    console.log("**", vidStream);
-    socket.emit("setHost", myId, roomId);
-    const call = peer.call(id, vidStream);
-    call.on('error', (err) => {
-        alert(err);
+var socket = io("https://127.0.0.1:3016", {reconnect: false})
+
+socket.request = function request(type, data = {}) {
+    return new Promise((resolve, reject) => {
+        socket.emit(type, data, (data) => {
+            if (data.error) {
+                reject(data.error)
+            } else {
+                resolve(data)
+            }
+        })
     })
-    call.on('stream', userStream => {
-        console.log("Rec also Streaming")
-        // addVideo(vid, userStream);
-    })
-    call.on('close', () => {
-        console.log("user disconect")
-    })
-})
-peer.on('open', async (id) => {
-    roomId = await fetch('http://localhost:4000/fetchID')
-        .then(response => response.json())
-    console.log("RoomID : ", roomId)
-    try {
-        vidStream = window.document.querySelectorAll("video")[0].captureStream();
+}
+
+var rc = null
+var producer = null;
+
+function joinRoom(name, room_id) {
+    if (rc && rc.isOpen()) {
+        console.log('already connected to a room')
+    } else {
+        var videoGrid = document.createElement('div')
+        var audioGrid = document.createElement('div')
+
+        rc = new RoomClient(videoGrid, videoGrid, audioGrid, window.mediasoupClient, socket, room_id, name, () => {
+            // rc.produce(RoomClient.mediaType.audio, 0)
+            // rc.produce(RoomClient.mediaType.video, 0)
+            rc.produce(RoomClient.mediaType.screen)
+
+        })
+        // addListeners()
     }
-    catch {
-        vidStream = await navigator.mediaDevices.getDisplayMedia({
-            video: true,
-            audio: true
-        });
-    }
-    myId = id;
-    console.log("Peer opened")
-    socket.emit("newUser", id, roomId);
-    socket.emit("setHost", id, roomId);
-    console.log("Starting Stream")
-})
-peer.on('call', async call => {
-    console.log("Rec Called");
-    socket.emit("setHost", id, roomId);
-    call.answer(vidStream);
-})
+}
+
+joinRoom(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), 'room')

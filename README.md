@@ -1,27 +1,20 @@
-# WatchParty
+# Mediasoup video conferencing
 
-Tasks: 
+Example website for multi-party video/audio/screen conferencing using mediasoup. This project is intended to better understand how mediasoup works with a simple example. 
 
-### Streaming
-- get the party id
-- get the video stream as send to all peers in the party
-- make extension to start stream
-- when a friend joins they can send their cam/audio feed too
-- Front-end for client/friends
+This project is featured on the [mediasoup examples page](https://mediasoup.org/documentation/examples/) with many other examples. Checkout mediasoup at [mediasoup.org](https://mediasoup.org)
 
-### Chat, Control and UI
-- Live chat between peers
-- Play/Pause and other controls implementation
-- extension options page UI
-- web-page html,css injection
-- Host transfer and Disconnection handling
-- Jump to time feature
-- Time duration display
-- UI and microinteractions
+# Running the code
 
-### Hosting and Testing
-- Select a hosting platform
-- Deploy the server files on platform
-- Setting/configuring CORS or headers if error recieved
-- If error exists deplying Docker container
-- Final Testing varios scenarios and test cases
+- run `npm install` then `npm start` to run the application. Then open your browser at `https://localhost:3016` or your own defined port/url in the config file.
+- (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem ssl/cert.pem` certificates with your own.
+
+# Deployment
+
+- in `config.js` replace the `announcedIP` with your public ip address of the server and modify the port you want to serve it in.
+- add firewall rules of the port of the webpage (default 3016) and the rtc connections (default udp 10000-10100) for the machine.
+
+
+notes : Best to run the project on a linux system as the mediasoup installation could have issues by installing on windows. If you have a windows system consider installing WSL to be able to run it. 
+
+[installing wsl on windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
