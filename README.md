@@ -82,7 +82,7 @@ WatchPlus
 
 ### Backend and Frontend
 - run `npm install` then `npm start` to run the application. Then open your browser at `https://localhost:3016` or your own defined port/url in the config file.
-- (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem ssl/cert.pem` certificates with your own.
+- (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem` `ssl/cert.pem` certificates with your own.
 
 ## Work left
 - [x] Mesh topology peer-to-peer network :: Check branch `Mesh_Network`
