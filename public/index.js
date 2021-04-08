@@ -55,7 +55,25 @@ function joinRoom(name, room_id) {
     }
 }
 
-joinRoom(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), roomID)
+(async () => {
+    if(roomID.length!=11) {
+        roomID = await socket.request('getNewRoom')
+        window.location.replace(roomID)
+    }
+    let res = await fetch('https://randomuser.me/api/?results=1&nat=us&inc=name')
+        .then(res => res.json())
+        .then(res => res.results[0].name)
+    var nameInp = document.getElementById('nameInp')
+    nameInp.value = res.first
+    document.getElementById('startStreaming').addEventListener('click', e => {
+        var nameInp = document.getElementById('nameInp')
+        var roomInp = document.getElementById('roomInp')
+        if(nameInp.value!=='' && /[a-z]{3}-[a-z]{3}-[a-z]{3}/.test(roomInp.value)){
+            joinRoom(nameInp.value, roomInp.value)
+            document.getElementById('modal').classList.toggle('hidden')
+        }
+    })
+})()
 
 
 function addListeners() {
@@ -125,7 +143,7 @@ videoDevice = 0;
             option.innerHTML = device.label
             option.addEventListener('click', (e) => {
                 idx = Array.prototype.indexOf.call(option.parentElement.children, option)
-                (el == videoSelect ? videoDevice : audioDevice) = idx 
+                    (el == videoSelect ? videoDevice : audioDevice) = idx
                 el.parentElement.querySelector('.dropdown__selected').innerHTML = option.innerHTML;
                 el.parentElement.querySelector('.dropdown__option--selected').classList.remove('dropdown__option--selected');
                 option.classList.add('dropdown__option--selected');
@@ -133,7 +151,7 @@ videoDevice = 0;
             el.appendChild(option)
         })
     }
-    catch(e) {
+    catch (e) {
         console.log(e)
         audioSelect.parentElement.querySelector('.dropdown__selected').innerHTML = 'Permission Denied';
         videoSelect.parentElement.querySelector('.dropdown__selected').innerHTML = 'Permission Denied';

@@ -12,6 +12,7 @@
 
     html {
       background: black;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
 
     #videoDiv {
@@ -40,7 +41,6 @@
       height: 100vh;
       background: #050505;
       color: white;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       font-size: 30px;
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
     }
@@ -267,6 +267,10 @@
       }
     }
 
+    .hidden {
+      display: none !important;
+    }
+
     .dropdown__options .dropdown__option {
       padding: 10px 10px;
       transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
@@ -332,7 +336,7 @@
     </div>
     <div id="chatParent">
 
-      <div style="margin: 20px;font-weight: bold;font-size: 35px;">Watch Party</div>
+      <div style="margin: 20px;font-weight: bold;font-size: 35px;">WatchParty</div>
       <div style="margin-top: -10px;margin-left: 25px;font-size: 20px;">Party Link</div>
       <div
         style="background: #151515;margin:10px;padding:10px;padding-left:20px;margin-left:20px;margin-right:25px;font-size:20px;border-radius:15px;">
@@ -414,6 +418,37 @@
           style="color:white;width: 80%; height: 40px;background-color: #141414;border: none;padding: 5px;padding-left: 20px;padding-right: 20px; font-size: 18px;border-radius: 15px;margin: 10px;"
           placeholder="Type a message" />
       </div>
+    </div>
+  </div>
+  <div id="modal"
+    style="width: 100vw;height: 100vh;position: absolute;background: rgba(0, 0, 0, 0.7);top:0;display: flex;justify-content: center;align-items: center;">
+    <div
+      style="width: 25%;height: 30%;background: #141414;border-radius: 20px;color:white;display: flex;flex-direction: column;justify-content: center; align-items: center;">
+      <div style="font-weight: 700;font-size: 35px;">WatchParty</div>
+      <div style="font-weight: 100;font-size: 30px;">Join Room</div>
+      <div style="position: relative;margin-top:10px;">
+        <div
+          style="width: 300px; background: black;color: white;height: 30px;font-size: 18px;border: none;border-radius: 10px;padding:5px;padding-left: 20px;padding-right: 20px;text-align: center;"
+          value="Host"></div>
+        <div style="position: absolute;top: 10px;left:10px;font-size: 18px;color: #777;">Name :</div>
+        <input id="nameInp"
+          style="position: absolute;top:4px;left:73px;width: 250px;background: transparent;color: white;height: 30px;font-size: 18px;border: none;text-align: center;"
+          value="" />
+      </div>
+
+      <div style="position: relative;margin-top:10px;">
+        <div
+          style="width: 300px; background: black;color: white;height: 30px;font-size: 18px;border: none;border-radius: 10px;padding:5px;padding-left: 20px;padding-right: 20px;text-align: center;"
+          value="Host"></div>
+        <div style="position: absolute;top: 10px;left:10px;font-size: 18px;color: #777;">Room :</div>
+        <input id="roomInp"
+          style="position: absolute;top:4px;left:73px;width: 250px;background: transparent;color: white;height: 30px;font-size: 18px;border: none;text-align: center;"
+          value="<%= RoomId %>" />
+      </div>
+      <button id="startStreaming"
+        style="background: blue;border: none;margin-top: 20px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
+        Join Now
+      </button>
     </div>
   </div>
 </body>

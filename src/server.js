@@ -29,7 +29,7 @@ const io = require('socket.io')(httpsServer, {
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.get('/', (req, res) => {
-    res.render('index', { RoomId: 'room' });
+    res.render('index', { RoomId: '' });
 });
 app.get('/:roomId', (req, res) => {
     res.render('index', { RoomId: req.params.roomId });
