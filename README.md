@@ -1,5 +1,4 @@
 # WatchParty
----
 
 ## Directory Structure
 ```
