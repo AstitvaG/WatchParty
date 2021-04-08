@@ -72,7 +72,7 @@ WatchPlus
 
 ### Chrome Extension
 > Highly recommended to Use Chromium
-- Go to [chrome://extensions](chrome://extensions)
+- Go to [`chrome://extensions`](chrome://extensions)
 - Then click `Load Unpacked`
 - Go to `WatchParty/extension` in browse folder and select
 - Enable the extension if disabled and then pin the extension to the title bar
