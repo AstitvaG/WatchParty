@@ -60,6 +60,9 @@ function joinRoom(name, room_id) {
         roomID = await socket.request('getNewRoom')
         window.location.replace(roomID)
     }
+    let meetlink = document.getElementById('meetLink')
+    meetlink.innerHTML = window.location.href
+    meetlink.href = window.location.href
     let res = await fetch('https://randomuser.me/api/?results=1&nat=us&inc=name')
         .then(res => res.json())
         .then(res => res.results[0].name)

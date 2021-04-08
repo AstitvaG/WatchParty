@@ -139,7 +139,7 @@ class RoomClient {
                         producerTransportId: this.producerTransport.id,
                         kind,
                         rtpParameters,
-                        isHost: true
+                        isHost: kind == 'video'
                     });
                     callback({
                         id: producer_id
@@ -252,7 +252,7 @@ class RoomClient {
     //////// MAIN FUNCTIONS /////////////
 
 
-    async produce(type, deviceId = null) {
+    async produce(type) {
         let mediaConstraints = {}
         let audio = false
         let screen = false
@@ -275,11 +275,7 @@ class RoomClient {
                         height: {
                             min: 400,
                             ideal: 1080
-                        },
-                        // deviceId: deviceId
-                        /*aspectRatio: {
-                            ideal: 1.7777777778
-                        }*/
+                        }
                     }
                 }
                 break
@@ -299,90 +295,120 @@ class RoomClient {
             console.log('producer already exists for this type ' + type)
             return
         }
-        console.log('mediacontraints:', mediaConstraints)
+        // console.log('mediacontraints:', mediaConstraints)
         let stream;
         try {
             stream = screen
-                ? await navigator.mediaDevices.getDisplayMedia()
+                ? await (async () => {
+                    let vidStream;
+                    try {
+                        vidStream = window.document.querySelectorAll("video")[0].captureStream();
+                    }
+                    catch {
+                        vidStream = await navigator.mediaDevices.getDisplayMedia({
+                            audio: {
+                                noiseSuppression: false,
+                                autoGainControl: false,
+                                echoCancellation: false,
+                                latency: 0,
+                                sampleRate: 48000
+                            },
+                            video: {
+                                width: 1920,
+                                height: 1080,
+                                frameRate: 30,
+                                latency: 0
+                            }
+                        });
+                    }
+                    return vidStream
+                })()
                 : await navigator.mediaDevices.getUserMedia(mediaConstraints)
             console.log(navigator.mediaDevices.getSupportedConstraints())
 
-
-            const track = audio ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0]
-            const params = {
-                track
-            };
-            if (!audio && !screen) {
-                params.encodings = [{
-                    rid: 'r0',
-                    maxBitrate: 100000,
-                    //scaleResolutionDownBy: 10.0,
-                    scalabilityMode: 'S1T3'
-                },
-                {
-                    rid: 'r1',
-                    maxBitrate: 300000,
-                    scalabilityMode: 'S1T3'
-                },
-                {
-                    rid: 'r2',
-                    maxBitrate: 900000,
-                    scalabilityMode: 'S1T3'
-                }
-                ];
-                params.codecOptions = {
-                    videoGoogleStartBitrate: 1000
-                };
+            let enc = [{
+                rid: 'r0',
+                maxBitrate: 100000,
+                //scaleResolutionDownBy: 10.0,
+                scalabilityMode: 'S1T3'
+            },
+            {
+                rid: 'r1',
+                maxBitrate: 300000,
+                scalabilityMode: 'S1T3'
+            },
+            {
+                rid: 'r2',
+                maxBitrate: 900000,
+                scalabilityMode: 'S1T3'
             }
-            producer = await this.producerTransport.produce(params)
-            console.log('producer', producer)
+            ];
 
-            this.producers.set(producer.id, producer)
+            const tracks = audio ? [stream.getAudioTracks()[0]] : screen ? [stream.getVideoTracks()[0], stream.getAudioTracks()[0]] : [stream.getVideoTracks()[0]]
+            const cb = (producer) => {
 
-            let elem
-            if (!audio) {
-                elem = document.createElement('video')
-                elem.srcObject = stream
-                elem.id = producer.id
-                elem.addEventListener('loadedmetadata', () => {
-                    elem.play()
+                console.log('producer', producer)
+
+                this.producers.set(producer.id, producer)
+
+                let elem
+                if (!audio) {
+                    elem = document.createElement('video')
+                    elem.srcObject = stream
+                    elem.id = producer.id
+                    elem.addEventListener('loadedmetadata', () => {
+                        elem.play()
+                    })
+                    // elem.playsinline = false
+                    // elem.autoplay = true
+                    // elem.className = "vid"
+                    this.localMediaEl.appendChild(elem)
+                }
+
+                producer.on('trackended', () => {
+                    this.closeProducer(type)
                 })
-                // elem.playsinline = false
-                // elem.autoplay = true
-                // elem.className = "vid"
-                this.localMediaEl.appendChild(elem)
+
+                producer.on('transportclose', () => {
+                    console.log('producer transport close')
+                    if (!audio) {
+                        elem.srcObject.getTracks().forEach(function (track) {
+                            track.stop()
+                        })
+                        elem.parentNode.removeChild(elem)
+                    }
+                    this.producers.delete(producer.id)
+
+                })
+
+                producer.on('close', () => {
+                    console.log('closing producer')
+                    if (!audio) {
+                        elem.srcObject.getTracks().forEach(function (track) {
+                            track.stop()
+                        })
+                        elem.parentNode.removeChild(elem)
+                    }
+                    this.producers.delete(producer.id)
+
+                })
+
+                this.producerLabel.set(type, producer.id)
             }
-
-            producer.on('trackended', () => {
-                this.closeProducer(type)
-            })
-
-            producer.on('transportclose', () => {
-                console.log('producer transport close')
-                if (!audio) {
-                    elem.srcObject.getTracks().forEach(function (track) {
-                        track.stop()
-                    })
-                    elem.parentNode.removeChild(elem)
+            tracks.forEach(track => {
+                const params = {
+                    track
+                };
+                if (!audio && !screen) {
+                    params.encodings = enc;
                 }
-                this.producers.delete(producer.id)
-
-            })
-
-            producer.on('close', () => {
-                console.log('closing producer')
                 if (!audio) {
-                    elem.srcObject.getTracks().forEach(function (track) {
-                        track.stop()
-                    })
-                    elem.parentNode.removeChild(elem)
+                    params.codecOptions = {
+                        videoGoogleStartBitrate: 1000
+                    };
                 }
-                this.producers.delete(producer.id)
-
+                this.producerTransport.produce(params).then(cb);
             })
-
-            this.producerLabel.set(type, producer.id)
-
             switch (type) {
                 case mediaType.audio:
                     this.event(_EVENTS.startAudio)
@@ -401,6 +427,7 @@ class RoomClient {
             console.log(err)
         }
     }
+
 
     async consume(producer_id) {
 

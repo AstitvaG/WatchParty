@@ -32,6 +32,9 @@ function joinRoom(name, room_id) {
 
 (async () => {
     room_id = await socket.request('getNewRoom');
-    console.log(room_id)
-    joinRoom(Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 5), room_id)
+    console.log(document.name)
+    console.log('https://localhost:3016/'+room_id, document.name)
+    chrome.runtime.sendMessage({ room_id, name: document.name })
+    document.room_id = room_id
+    joinRoom(document.name, room_id)
 })();

@@ -1,31 +1,110 @@
 // Initialize butotn with users's prefered color
 
 
-let startStreaming = document.getElementById("startStreaming");
-let joinExisting = document.getElementById("joinExisting");
-var libsLoaded = false;
+var startStreaming = document.getElementById("startStreaming");
+var joinExisting = document.getElementById("joinExisting");
+var activeTab;
 
-// When the button is clicked, inject content.js into current page
+
 startStreaming.addEventListener("click", async () => {
-	console.log("Libs", libsLoaded)
-	let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-	if (!window.libsLoaded)
-		chrome.scripting.executeScript({
-			target: { tabId: tab.id },
-			files: ['libs/libs.js']
-		}, () => chrome.scripting.executeScript({
-			target: { tabId: tab.id },
-			files: ['libs/RoomClient.js']
-		}, () => chrome.scripting.executeScript({
-			target: { tabId: tab.id },
-			files: ['content.js']
-		}, () => libsLoaded = true)));
-	else chrome.scripting.executeScript({
-		target: { tabId: tab.id },
+	console.log("Sending name", document.getElementById("nameInp").value)
+	await chrome.tabs.sendMessage(activeTab.id, { name: document.getElementById("nameInp").value })
+	chrome.scripting.executeScript({
+		target: { tabId: activeTab.id },
+		files: ['libs/libs.js']
+	}, () => chrome.scripting.executeScript({
+		target: { tabId: activeTab.id },
+		files: ['libs/RoomClient.js']
+	}, () => chrome.scripting.executeScript({
+		target: { tabId: activeTab.id },
 		files: ['content.js']
-	}, () => libsLoaded = true);
+	}, () => libsLoaded = true)));
 });
+
+chrome.runtime.onMessage.addListener(
+	function (req, sender, resp) {
+		document.room_id = req.room_id
+		let roomInp = document.getElementById("roomInp")
+		roomInp.value = req.room_id
+		roomInp.parentElement.classList.toggle('hidden');
+		document.getElementById("startStreaming").classList.toggle('hidden');
+		document.getElementById("joinExisting").classList.toggle('hidden');
+		document.getElementById("copyLink").classList.toggle('hidden');
+	}
+);
 
 joinExisting.addEventListener("click", async () => {
 	window.open('https:\/\/localhost:3016', '_blank')
-})
+});
+
+document.getElementById("copyLink").addEventListener("click", async () => {
+	copyTextToClipboard('https:\/\/localhost:3016\/' + document.room_id)
+});
+
+
+
+(async () => {
+	let name = await fetch('https://randomuser.me/api/?results=1&nat=us&inc=name')
+		.then(res => res.json())
+		.then(res => res.results[0].name.first)
+	let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+	activeTab = tab;
+	await chrome.scripting.executeScript({
+		target: { tabId: activeTab.id },
+		function: () => {
+			chrome.runtime.onMessage.addListener((req, sender, resp) => {
+				if (req.name) document.name = req.name
+				if (req.room_id) {
+					console.log("Responding", document.room_id)
+					resp({ room_id: document.room_id, name: document.name });
+				}
+			});
+		}
+	});
+	document.getElementById("nameInp").value = name
+	chrome.tabs.sendMessage(activeTab.id, { room_id: 'get' }, (resp) => {
+		if (resp.room_id && resp.name) {
+			document.room_id = resp.room_id
+			document.getElementById("nameInp").value = resp.name
+			let roomInp = document.getElementById("roomInp")
+			roomInp.value = resp.room_id
+			roomInp.parentElement.classList.toggle('hidden');
+			document.getElementById("startStreaming").classList.toggle('hidden');
+			document.getElementById("joinExisting").classList.toggle('hidden');
+			document.getElementById("copyLink").classList.toggle('hidden');
+			copyTextToClipboard('https:\/\/localhost:3016\/' + document.room_id)
+		}
+	});
+})()
+
+
+function fallbackCopyTextToClipboard(text) {
+	var textArea = document.createElement("textarea");
+	textArea.value = text;
+	textArea.style.top = "0";
+	textArea.style.left = "0";
+	textArea.style.position = "fixed";
+	document.body.appendChild(textArea);
+	textArea.focus();
+	textArea.select();
+	try {
+		var successful = document.execCommand('copy');
+		var msg = successful ? 'successful' : 'unsuccessful';
+		console.log('Fallback: Copying text command was ' + msg);
+	} catch (err) {
+		console.error('Fallback: Oops, unable to copy', err);
+	}
+	document.body.removeChild(textArea);
+}
+function copyTextToClipboard(text) {
+	if (!navigator.clipboard) {
+		fallbackCopyTextToClipboard(text);
+		return;
+	}
+	navigator.clipboard.writeText(text).then(function () {
+		document.getElementById('linkCopied').classList.remove('hidden')
+		setTimeout(() => document.getElementById('linkCopied').classList.add('hidden'), 2000);
+	}, function (err) {
+		console.error('Async: Could not copy text: ', err);
+	});
+}

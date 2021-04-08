@@ -110,11 +110,10 @@ io.on('connection', socket => {
     })
 
     socket.on('getNewRoom', (_, callback) => {
-
         const getr = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3)
         const getx = () => getr() + '-' + getr() + '-' + getr()
         let room_id = getx()
-        while (roomList.has(room_id) || room_id.length != 11) room_id = getx()
+        while ((roomList.has(room_id) && roomList.get(room_id).getPeers().size != 0) || room_id.length != 11)room_id = getx()
         callback(room_id);
     })
 

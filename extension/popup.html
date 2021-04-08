@@ -7,37 +7,55 @@
 		*:focus {
 			outline: none;
 		}
+
+		.hidden {
+			display: none;
+		}
 	</style>
 </head>
 
 <body style="background: #141414;color: white;">
 	<div
-		style="width: 250px;height: 280px;display: flex;flex-direction: column;justify-content: center;align-items: center;">
+		style="width: 250px;height: 300px;display: flex;flex-direction: column;justify-content: center;align-items: center;">
 		<div style="font-size: 25px;font-weight: bold;">WatchParty</div>
 		<div
 			style="font-size: 15px;color: #ddd;padding: 20px;padding-top: 5px;padding-bottom: 15px;text-align: center;">
 			Watch Movies, TV
 			Series and more with your Friends!</div>
 		<div style="position: relative;">
-			<div style="width: 200px; max-width: 200px;background: black;color: white;height: 30px;font-size: 18px;border: none;border-radius: 10px;padding:5px;padding-left: 20px;padding-right: 20px;text-align: center;"
-				value="Host" />
+			<div
+				style="width: 200px; max-width: 200px;background: black;color: white;height: 30px;font-size: 18px;border: none;border-radius: 10px;padding:5px;padding-left: 20px;padding-right: 20px;text-align: center;">
+			</div>
 			<div style="position: absolute;top: 6px;left:10px;font-size: 18px;color: #777;">Name :</div>
-			<input
+			<input id="nameInp"
 				style="position: absolute;top:4px;left:70px;width: 150px;max-width: 200px;background: transparent;color: white;height: 30px;font-size: 18px;border: none;text-align: center;"
-				value="Host" />
+				value="" />
+		</div>
+		<div class="hidden" style="position: relative;margin-top: 10px;">
+			<div
+				style="width: 200px; max-width: 200px;background: black;color: white;height: 30px;font-size: 18px;border: none;border-radius: 10px;padding:5px;padding-left: 20px;padding-right: 20px;text-align: center;">
+			</div>
+			<div style="position: absolute;top: 6px;left:10px;font-size: 18px;color: #777;">Room :</div>
+			<input id="roomInp"
+				style="position: absolute;top:4px;left:70px;width: 150px;max-width: 200px;background: transparent;color: white;height: 30px;font-size: 18px;border: none;text-align: center;"
+				value="" />
 		</div>
 		<button id="startStreaming"
-			style="background: blue;border: none;margin-left:28px;margin-right:28px;margin-top: 20px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
+			style="background: blue;border: none;margin-top: 20px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
 			Start Streaming
 		</button>
 		<button id="joinExisting"
-			style="background: #222;border: none;margin-left:28px;margin-right:28px;margin-top: 5px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
+			style="background: #222;border: none;margin-top: 5px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
 			Join Existing
 		</button>
+		<button class="hidden" id="copyLink"
+			style="background: blue;border: none;margin-top: 20px;height: 40px;width: 180px;font-size: 18px;color: white;border-radius: 10px;">
+			Copy Link
+		</button>
+		<div id="linkCopied" class="hidden" style="position:absolute; bottom: 10px;color: lightgreen; font-size: 17px;">Link Copied!
+		</div>
 		<script src="popup.js"></script>
 	</div>
-	<!-- <script src="libs/socket.io.js"></script> -->
-	<!-- <script src="libs/peer.js"></script> -->
 </body>
 
 </html>
