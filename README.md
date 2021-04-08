@@ -71,8 +71,40 @@ WatchPlus
 
 ## Running the code
 
+### Chrome Extension
+> Highly recommended to Use Chromium
+- Go to [chrome://extensions](chrome://extensions)
+- Then click `Load Unpacked`
+- Go to `WatchParty/extension` in browse folder and select
+- Enable the extension if disabled and then pin the extension to the title bar
+- Development:
+  - The `content.js` logs will be displayed in the website console itself
+  - The logs of `popup.js` can be shown by: Right Click > Inspect pop-up > Console
+
+### Backend and Frontend
 - run `npm install` then `npm start` to run the application. Then open your browser at `https://localhost:3016` or your own defined port/url in the config file.
 - (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem ssl/cert.pem` certificates with your own.
+
+## Work left
+- [x] Mesh topology peer-to-peer network :: Check branch `Mesh_Network`
+- [x] Making extension
+- [x] Making client UI
+- [x] Making backend SFU server :: SFU lib used : [mediasoup](https://mediasoup.org/) 
+- [x] Making Host from extension
+- [x] Host/Client name handling
+- [x] Seperate rooms
+- [x] Extension UX for rooms
+- [ ] Chat part
+- [ ] Chat microinteractions
+- [ ] Play/Pause part
+- [ ] Jump to time and Slider part
+- [ ] HTML/CSS injection on Host
+- [ ] Deployment and Testing
+
+### Known issues
+- [ ] There is a de-sync in audio video stream from host
+- [ ] Extension popup closes when share popup comes
+- [ ] Site on accessable even from within the same network
 
 ## Deployment
 
