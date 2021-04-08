@@ -421,22 +421,36 @@ class RoomClient {
                 // elem.playsinline = false
                 // elem.autoplay = true
                 // elem.className = "vid"
-                if (this.host_id == producer_id && this.hostVideoEl.children.length == 0) {
+                if (this.host_id[0] == producer_id && this.hostVideoEl.children.length == 0) {
                     let child = this.hostVideoEl.children
                     this.hostVideoEl.appendChild(elem)
                 }
                 else
                     this.localMediaEl.appendChild(elem)
             } else {
-                elem = document.createElement('audio')
-                elem.srcObject = stream
-                elem.id = consumer.id
-                elem.addEventListener('loadedmetadata', () => {
-                    elem.play()
-                })
+                try {
+                    if (this.host_id[1] != producer_id) throw ""
+                    console.log("Host stream A/V",);
+                    // const videoElement = document.querySelector('video');
+                    // videoElement.srcObject.addTrack()
+                    // videoElement.videoTracks.addEventListener('addtrack', (event) => {
+                    //     console.log(`Video track: ${event.track.label} added`);
+                    // });
+                    this.hostVideoEl.children[0].srcObject.addTrack(stream.getAudioTracks()[0]);
+                    console.log("Added audio traack to existing video element")
+                }
+                catch (e) {
+                    console.log("Fallback", e)
+                    elem = document.createElement('audio')
+                    elem.srcObject = stream
+                    elem.id = consumer.id
+                    elem.addEventListener('loadedmetadata', () => {
+                        elem.play()
+                    })
+                    this.remoteAudioEl.appendChild(elem)
+                }
                 // elem.playsinline = false
                 // elem.autoplay = true
-                this.remoteAudioEl.appendChild(elem)
             }
 
             consumer.on('trackended', function () {

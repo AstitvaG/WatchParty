@@ -2,7 +2,8 @@ const config = require('./config')
 module.exports = class Room {
     constructor(room_id, worker, io) {
         this.id = room_id
-        this.host_id = 'none'
+        this.host_id_a = 'none'
+        this.host_id_v = 'none'
         const mediaCodecs = config.mediasoup.router.mediaCodecs
         worker.createRouter({
             mediaCodecs
@@ -14,12 +15,12 @@ module.exports = class Room {
         this.io = io
     }
 
-    setHost(host_id) {
-        this.host_id = host_id
+    setHost(host_id, kind) {
+        kind == "video" ? this.host_id_v = host_id : this.host_id_a = host_id
     }
 
     getHost() {
-        return this.host_id
+        return [this.host_id_v, this.host_id_a];
     }
 
     addPeer(peer) {
@@ -58,10 +59,10 @@ module.exports = class Room {
         if (maxIncomingBitrate) {
             try {
                 await transport.setMaxIncomingBitrate(maxIncomingBitrate);
-            } catch (error) {}
+            } catch (error) { }
         }
 
-        transport.on('dtlsstatechange', function(dtlsState) {
+        transport.on('dtlsstatechange', function (dtlsState) {
 
             if (dtlsState === 'closed') {
                 console.log('---transport close--- ' + this.peers.get(socket_id).name + ' closed')
@@ -94,7 +95,7 @@ module.exports = class Room {
         // handle undefined errors
         return new Promise(async function (resolve, reject) {
             let producer = await this.peers.get(socket_id).createProducer(producerTransportId, rtpParameters, kind)
-            isHost && this.setHost(producer.id)
+            isHost && this.setHost(producer.id, kind)
             resolve(producer.id)
             this.broadCast(socket_id, 'newProducers', [{
                 producer_id: producer.id,
@@ -103,19 +104,19 @@ module.exports = class Room {
         }.bind(this))
     }
 
-    async consume(socket_id, consumer_transport_id, producer_id,  rtpCapabilities) {
+    async consume(socket_id, consumer_transport_id, producer_id, rtpCapabilities) {
         // handle nulls
         if (!this.router.canConsume({
-                producerId: producer_id,
-                rtpCapabilities,
-            })) {
+            producerId: producer_id,
+            rtpCapabilities,
+        })) {
             console.error('can not consume');
             return;
         }
 
-        let {consumer, params} = await this.peers.get(socket_id).createConsumer(consumer_transport_id, producer_id, rtpCapabilities)
-        
-        consumer.on('producerclose', function(){
+        let { consumer, params } = await this.peers.get(socket_id).createConsumer(consumer_transport_id, producer_id, rtpCapabilities)
+
+        consumer.on('producerclose', function () {
             console.log(`---consumer closed--- due to producerclose event  name:${this.peers.get(socket_id).name} consumer_id: ${consumer.id}`)
             this.peers.get(socket_id).removeConsumer(consumer.id)
             // tell client consumer is dead
@@ -147,7 +148,7 @@ module.exports = class Room {
         this.io.to(socket_id).emit(name, data)
     }
 
-    getPeers(){
+    getPeers() {
         return this.peers
     }
 

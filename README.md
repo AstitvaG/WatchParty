@@ -101,7 +101,7 @@ WatchPlus
 - [ ] Deployment and Testing
 
 ### Known issues
-- [ ] There is a de-sync in audio video stream from host
+- [x] There is a de-sync in audio video stream from host
 - [ ] Extension popup closes when share popup comes
 - [ ] Site on accessable even from within the same network
 

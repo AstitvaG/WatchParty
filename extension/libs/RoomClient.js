@@ -139,7 +139,7 @@ class RoomClient {
                         producerTransportId: this.producerTransport.id,
                         kind,
                         rtpParameters,
-                        isHost: kind == 'video'
+                        isHost: true
                     });
                     callback({
                         id: producer_id
