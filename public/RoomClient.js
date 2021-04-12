@@ -14,6 +14,8 @@ const _EVENTS = {
     stopScreen: 'stopScreen'
 }
 
+var hostStream = new MediaStream();
+
 class RoomClient {
 
     constructor(localMediaEl, hostVideoEl, remoteAudioEl, mediasoupClient, socket, room_id, name, successCallback) {
@@ -285,8 +287,6 @@ class RoomClient {
                 screen = true
                 break;
             default:
-                return
-                break;
         }
         if (!this.device.canProduce('video') && !audio) {
             console.error('cannot produce video');
@@ -413,31 +413,24 @@ class RoomClient {
             let elem;
             if (kind === 'video') {
                 elem = document.createElement('video')
-                elem.srcObject = stream
-                elem.id = consumer.id
-                elem.addEventListener('loadedmetadata', () => {
-                    elem.play()
-                })
-                // elem.playsinline = false
-                // elem.autoplay = true
-                // elem.className = "vid"
-                if (this.host_id[0] == producer_id && this.hostVideoEl.children.length == 0) {
-                    let child = this.hostVideoEl.children
-                    this.hostVideoEl.appendChild(elem)
+                if (producer_id == this.host_id[0]) {
+                    hostStream.addTrack(stream.getVideoTracks()[0]);
+                    elem.srcObject = hostStream;
                 }
+                else
+                    elem.srcObject = stream
+
+                elem.id = consumer.id
+                elem.addEventListener('loadedmetadata', elem.play)
+                if (this.host_id[0] == producer_id && this.hostVideoEl.children.length == 0)
+                    this.hostVideoEl.appendChild(elem)
                 else
                     this.localMediaEl.appendChild(elem)
             } else {
                 try {
                     if (this.host_id[1] != producer_id) throw ""
-                    console.log("Host stream A/V",);
-                    // const videoElement = document.querySelector('video');
-                    // videoElement.srcObject.addTrack()
-                    // videoElement.videoTracks.addEventListener('addtrack', (event) => {
-                    //     console.log(`Video track: ${event.track.label} added`);
-                    // });
-                    this.hostVideoEl.children[0].srcObject.addTrack(stream.getAudioTracks()[0]);
-                    console.log("Added audio traack to existing video element")
+                    console.log("Host stream A/V");
+                    hostStream.addTrack(stream.getAudioTracks()[0]);
                 }
                 catch (e) {
                     console.log("Fallback", e)

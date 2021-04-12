@@ -17,8 +17,8 @@ dropdowns.forEach(dropdown => {
     // })
 })
 
-if (location.href.substr(0, 5) !== 'https')
-    location.href = 'https' + location.href.substr(4, location.href.length - 4)
+// if (location.href.substr(0, 5) !== 'https')
+//     location.href = 'https' + location.href.substr(4, location.href.length - 4)
 
 
 socket.request = function request(type, data = {}) {
@@ -37,8 +37,8 @@ socket.request = function request(type, data = {}) {
 let rc = null
 let producer = null;
 
-var videoGrid = document.getElementById('videoDiv')
-var audioGrid = document.getElementById('videoDiv')
+var videoDiv = document.getElementById('videoDiv')
+var audioDiv = document.getElementById('audioDiv')
 var hostDiv = document.getElementById('hostDiv')
 var audioSelect = document.getElementById('audioSelect')
 var videoSelect = document.getElementById('videoSelect')
@@ -47,7 +47,7 @@ function joinRoom(name, room_id) {
     if (rc && rc.isOpen()) {
         console.log('already connected to a room')
     } else {
-        rc = new RoomClient(videoGrid, hostDiv, audioGrid, window.mediasoupClient, socket, room_id, name, () => {
+        rc = new RoomClient(videoDiv, hostDiv, audioDiv, window.mediasoupClient, socket, room_id, name, () => {
             // rc.produce(RoomClient.mediaType.audio, 0)
             // rc.produce(RoomClient.mediaType.video, 0)
         })
@@ -68,7 +68,7 @@ function joinRoom(name, room_id) {
         .then(res => res.results[0].name)
     var nameInp = document.getElementById('nameInp')
     nameInp.value = res.first
-    document.getElementById('startStreaming').addEventListener('click', e => {
+    document.getElementById('joinNow').addEventListener('click', e => {
         var nameInp = document.getElementById('nameInp')
         var roomInp = document.getElementById('roomInp')
         if(nameInp.value!=='' && /[a-z]{3}-[a-z]{3}-[a-z]{3}/.test(roomInp.value)){

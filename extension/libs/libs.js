@@ -1,5 +1,5 @@
 try{
-    io,Peer;
+    io;
     throw ''
 }
 catch(e){
