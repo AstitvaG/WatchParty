@@ -22,8 +22,9 @@ module.exports = class Room {
         this.io = io
     }
 
-    setHost(host_id, kind) {
+    setHost(host_id, kind, socket_id) {
         kind == "video" ? this.host_id_v = host_id : this.host_id_a = host_id
+        this.host_socket_id = socket_id
     }
 
     getHost() {
@@ -112,7 +113,7 @@ module.exports = class Room {
         // handle undefined errors
         return new Promise(async function (resolve, reject) {
             let producer = await this.peers.get(socket_id).createProducer(producerTransportId, rtpParameters, kind)
-            isHost && this.setHost(producer.id, kind)
+            isHost && this.setHost(producer.id, kind, socket_id)
             resolve(producer.id)
             this.broadCast(socket_id, 'newProducers', [{
                 producer_id: producer.id,

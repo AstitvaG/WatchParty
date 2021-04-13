@@ -94,21 +94,30 @@ WatchPlus
 - [x] Seperate rooms
 - [x] Extension UX for rooms
 - [ ] Chat part
-- [ ] Chat microinteractions
-- [ ] Play/Pause part
-- [ ] Jump to time and Slider part
+- [x] Chat microinteractions
+- [x] Play/Pause part
+- [x] Jump to time and Slider part
 - [ ] HTML/CSS injection on Host
 - [ ] Deployment and Testing
 
 ### Known issues
 - [x] There is a de-sync in audio video stream from host
-- [ ] When directly sharing a video, and either its src changes (ex. yt ads) or the video ends, transmission freeses
-- [ ] Extension popup closes when share popup comes
-- [ ] Site on accessable even from within the same network
+- [x] When directly sharing a video, and either its src changes (ex. yt ads) or the video ends, transmission freeses
+- [ ] Extension popup closes when share popup comes, thus link not copied.
+- [x] Site on accessable even from within the same network
+- [ ] Still on HTTP, so extension can't be run on websites directly.
+- [ ] Noise in audio when stream changed multiple times
+
+### Currently, for running on websites,
+- Type `chrome://settings/content/insecureContent` in chrome URL bar.
+- Select `Add`
+- Now add the base Url of the website.
+  - Ex for youtube: `[*.]youtube.com`
+- Then start streaming on that website using the extension
 
 ## Deployment
 
-- in `config.js` replace the `announcedIP` with your public ip address of the server and modify the port you want to serve it in.
+- in `config.js` replace the `announcedIP` with your public ip address of the server (important) and modify the port you want to serve it in.
 - add firewall rules of the port of the webpage (default 3016) and the rtc connections (default udp 10000-10100) for the machine.
 
 

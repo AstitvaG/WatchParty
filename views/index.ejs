@@ -90,6 +90,7 @@
       height: 80vh;
       opacity: 0;
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
+      cursor: none;
     }
 
     #controllerDiv.big-host {
@@ -98,9 +99,10 @@
     }
 
 
-    #controllerDiv:hover {
+    #controllerDiv.active {
       opacity: 100%;
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
+      cursor: pointer !important;
     }
 
     #controlDiv {
@@ -116,7 +118,7 @@
       align-items: center;
       background: linear-gradient(rgba(0, 0, 0, 0) 85%, rgba(0, 0, 0, 0.2) 100%);
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
-      cursor: pointer;
+      text-shadow: rgba(0,0,0,0.6) 2px 2px;
     }
 
 
@@ -393,27 +395,21 @@
 
 <body>
   <div style="flex-direction:row;display:flex;max-width: 100vw;max-height: 100vh;overflow: hidden;">
-    <button id="toggleBtn" onclick="{
-        document.getElementById('chatParent').classList.toggle('hidden-x');
-        document.getElementById('videoDiv').classList.toggle('hidden-y');
-        document.getElementById('hostDiv').classList.toggle('big-host');
-        document.getElementById('toggleBtn').classList.toggle('change');
-        document.getElementById('sliderDiv').classList.toggle('big-host');
-        document.getElementById('controllerDiv').classList.toggle('big-host');
-        document.getElementById('controlDiv').classList.toggle('big-host');
-        }"
+    <button id="toggleBtn" onclick="toggleFullScreen()"
       style="position: absolute;top: 1vh;right: 1vh;width: 50px;height: 50px;background: #141414;font-size: 25px;padding: 0;z-index: 3;">
     </button>
     <div style="flex-direction: column;display: flex;">
       <div id="hostDiv"> </div>
       <div id="videoDiv"> </div>
       <div id="controllerDiv">
-        <div id="controlDiv"></div>
+        <div id="controlDiv" onclick="controlDiv.classList.contains('paused')?socket.emit('play'):socket.emit('pause')"></div>
         <div id="sliderDiv">
-          <div>12:41</div>
-          <input type="range" min="1" max="100" value="50" id="timeSelect"
+          <div id="currTime">0:00</div>
+          <input type="range" min="1" max="100" value="0" id="timeSelect"
+            onchange="{socket.emit('seekTo', timeSelect.value);}"
+            oninput="{currTime.innerHTML = secondsToTime(timeSelect.value)}"
             style="width: 88%;position: absolute;align-self: center;left:6%;">
-          <div>1:45:46</div>
+          <div id="durationTime">1:45:46</div>
         </div>
       </div>
       <div id="audioDiv"></div>
@@ -499,7 +495,7 @@
         </div>
       </div>
       <div style="position: absolute;bottom: 3px;display: flex;width:20vw;justify-content: center;">
-        <input
+        <input id="newChat"
           style="color:white;width: 80%; height: 40px;background-color: #141414;border: none;padding: 5px;padding-left: 20px;padding-right: 20px; font-size: 18px;border-radius: 15px;margin: 10px;"
           placeholder="Type a message" />
       </div>

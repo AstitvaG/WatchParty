@@ -14,7 +14,7 @@ const options = {
     cert: fs.readFileSync(path.join(__dirname, config.sslCrt), 'utf-8')
 }
 // For HTTPS:
-    // const http = require('https').createServer(options, app);
+// const http = require('https').createServer(options, app);
 
 const http = require('http').Server(app);
 
@@ -116,7 +116,7 @@ io.on('connection', socket => {
         const getr = () => Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 3)
         const getx = () => getr() + '-' + getr() + '-' + getr()
         let room_id = getx()
-        while ((roomList.has(room_id) && roomList.get(room_id).getPeers().size != 0) || room_id.length != 11)room_id = getx()
+        while ((roomList.has(room_id) && roomList.get(room_id).getPeers().size != 0) || room_id.length != 11) room_id = getx()
         callback(room_id);
     })
 
@@ -134,6 +134,48 @@ io.on('connection', socket => {
         socket.room_id = room_id
 
         cb(roomList.get(room_id).toJson())
+    })
+
+    socket.on('seekTo', (time) => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.send(room.host_socket_id, 'seekTo', time)
+        console.log("Seek Called from Client", time);
+    })
+
+    socket.on('play', () => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.send(room.host_socket_id, 'play', {})
+        console.log("Play Called from Client");
+    })
+
+    socket.on('pause', () => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.send(room.host_socket_id, 'pause', {})
+        console.log("Pause Called from Client");
+    })
+
+    socket.on('played', () => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'played', {})
+        console.log("Played Called from Host");
+    })
+
+    socket.on('paused', () => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'paused', {})
+        console.log("Paused Called from Host");
+    })
+
+    socket.on('durationed', (duration) => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'durationed', duration)
+        console.log("Durationed Called from Host", duration);
+    })
+
+    socket.on('timed', (time) => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'timed', time)
+        console.log("Timed Called from Host", time);
     })
 
     socket.on('getHost', (_, callback) => {

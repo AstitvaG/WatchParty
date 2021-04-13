@@ -249,10 +249,33 @@ class RoomClient {
             }
         }.bind(this))
 
+        this.socket.on('paused', () => {
+            console.log("Paused")
+            document.getElementById('controlDiv').classList.add('paused');
+        })
+
+        this.socket.on('played', () => {
+            console.log("Played")
+            document.getElementById('controlDiv').classList.remove('paused');
+        })
+
+        this.socket.on('durationed', (duration) => {
+            console.log("Duration Changed")
+            if (duration) {
+                document.getElementById('timeSelect').max = duration;
+                document.getElementById('durationTime').innerHTML = secondsToTime(duration);
+            }
+        })
+
+        this.socket.on('timed', (time) => {
+            if(time==0 || time){
+                document.getElementById('timeSelect').value = time;
+            }
+        })
+
         this.socket.on('disconnect', function () {
             this.exit(true)
         }.bind(this))
-
 
     }
 
@@ -448,8 +471,9 @@ class RoomClient {
             } else {
                 try {
                     if (this.host_id[1] != producer_id) throw ""
+                    hostStream.getAudioTracks().forEach(track => {track.stop(); hostStream.removeTrack(track);})
                     hostStream.addTrack(stream.getAudioTracks()[0]);
-                    console.log("Host stream A/V");
+                    console.log("Host stream A/V", stream.getAudioTracks().length);
                 }
                 catch (e) {
                     console.log("Fallback", e)

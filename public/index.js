@@ -42,6 +42,12 @@ var audioDiv = document.getElementById('audioDiv')
 var hostDiv = document.getElementById('hostDiv')
 var audioSelect = document.getElementById('audioSelect')
 var videoSelect = document.getElementById('videoSelect')
+var timeSelect = document.getElementById('timeSelect')
+var currTime = document.getElementById('currTime')
+var newChat = document.getElementById('newChat')
+var controlDiv = document.getElementById('controlDiv')
+var controllerDiv = document.getElementById('controllerDiv')
+
 
 function joinRoom(name, room_id) {
     if (rc && rc.isOpen()) {
@@ -56,7 +62,7 @@ function joinRoom(name, room_id) {
 }
 
 (async () => {
-    if(roomID.length!=11) {
+    if (roomID.length != 11) {
         roomID = await socket.request('getNewRoom')
         window.location.replace(roomID)
     }
@@ -71,7 +77,7 @@ function joinRoom(name, room_id) {
     document.getElementById('joinNow').addEventListener('click', e => {
         var nameInp = document.getElementById('nameInp')
         var roomInp = document.getElementById('roomInp')
-        if(nameInp.value!=='' && /[a-z]{3}-[a-z]{3}-[a-z]{3}/.test(roomInp.value)){
+        if (nameInp.value !== '' && /[a-z]{3}-[a-z]{3}-[a-z]{3}/.test(roomInp.value)) {
             joinRoom(nameInp.value, roomInp.value)
             document.getElementById('modal').classList.toggle('hidden')
         }
@@ -166,6 +172,38 @@ videoDevice = 0;
     }
 })();
 
+var timeout_evt = null;
+controllerDiv.addEventListener('mousemove', () => {
+    if (timeout_evt) {
+        clearTimeout(timeout_evt);
+        timeout_evt = null;
+    }
+    controllerDiv.classList.add('active');
+    timeout_evt = setTimeout(() => controllerDiv.classList.remove('active'), 1000)
+})
+
+controllerDiv.addEventListener('mouseleave', () => {
+    if (timeout_evt) {
+        clearTimeout(timeout_evt);
+        timeout_evt = null;
+    }
+    controllerDiv.classList.remove('active');
+})
+
+document.addEventListener('keypress', (e) => {
+    if (newChat != document.activeElement) {
+        if (e.key == "f")
+            toggleFullScreen();
+        if (e.key == "m") {
+            newChat.focus()
+            setTimeout(() => newChat.value = "", 1)
+        }
+        if (e.key == " ")
+            controlDiv.classList.contains('paused') ? socket.emit('play') : socket.emit('pause')
+        console.log(e)
+    }
+})
+
 function fallbackCopyTextToClipboard(text) {
     var textArea = document.createElement("textarea");
     textArea.value = text;
@@ -194,4 +232,25 @@ function copyTextToClipboard(text) {
     }, function (err) {
         console.error('Async: Could not copy text: ', err);
     });
+}
+function secondsToTime(seconds) {
+    var sec_num = parseInt(seconds, 10)
+    var hours = Math.floor(sec_num / 3600)
+    var minutes = Math.floor(sec_num / 60) % 60
+    var seconds = sec_num % 60
+
+    return [hours, minutes, seconds]
+        .map(v => v < 10 ? "0" + v : v)
+        .filter((v, i) => v !== "00" || i > 0)
+        .join(":")
+}
+
+function toggleFullScreen() {
+    document.getElementById('chatParent').classList.toggle('hidden-x');
+    document.getElementById('videoDiv').classList.toggle('hidden-y');
+    document.getElementById('hostDiv').classList.toggle('big-host');
+    document.getElementById('toggleBtn').classList.toggle('change');
+    document.getElementById('sliderDiv').classList.toggle('big-host');
+    document.getElementById('controllerDiv').classList.toggle('big-host');
+    document.getElementById('controlDiv').classList.toggle('big-host');
 }
