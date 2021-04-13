@@ -21,6 +21,8 @@ startStreaming.addEventListener("click", async () => {
 	}, () => libsLoaded = true)));
 });
 
+
+// Runs when extension starts streaming
 chrome.runtime.onMessage.addListener(
 	function (req, sender, resp) {
 		document.room_id = req.room_id
@@ -34,11 +36,11 @@ chrome.runtime.onMessage.addListener(
 );
 
 joinExisting.addEventListener("click", async () => {
-	window.open('https:\/\/localhost:3016', '_blank')
+	window.open('http:\/\/10.1.102.27:3016', '_blank')
 });
 
 document.getElementById("copyLink").addEventListener("click", async () => {
-	copyTextToClipboard('https:\/\/localhost:3016\/' + document.room_id)
+	copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
 });
 
 
@@ -62,6 +64,8 @@ document.getElementById("copyLink").addEventListener("click", async () => {
 		}
 	});
 	document.getElementById("nameInp").value = name
+
+	// Runs when Popup is loaded
 	chrome.tabs.sendMessage(activeTab.id, { room_id: 'get' }, (resp) => {
 		if (resp.room_id && resp.name) {
 			document.room_id = resp.room_id
@@ -72,7 +76,7 @@ document.getElementById("copyLink").addEventListener("click", async () => {
 			document.getElementById("startStreaming").classList.toggle('hidden');
 			document.getElementById("joinExisting").classList.toggle('hidden');
 			document.getElementById("copyLink").classList.toggle('hidden');
-			copyTextToClipboard('https:\/\/localhost:3016\/' + document.room_id)
+			copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
 		}
 	});
 })()

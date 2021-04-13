@@ -1,7 +1,6 @@
 const express = require('express')
 
 const app = express()
-const https = require('httpolyglot')
 const fs = require('fs')
 const mediasoup = require('mediasoup')
 const config = require('./config')
@@ -14,9 +13,13 @@ const options = {
     key: fs.readFileSync(path.join(__dirname, config.sslKey), 'utf-8'),
     cert: fs.readFileSync(path.join(__dirname, config.sslCrt), 'utf-8')
 }
+// For HTTPS:
+    // const http = require('https').createServer(options, app);
 
-const httpsServer = https.createServer(options, app)
-const io = require('socket.io')(httpsServer, {
+const http = require('http').Server(app);
+
+// const http = https.S(options, app)
+const io = require('socket.io')(http, {
     cors: {
         "origin": "*",
         "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -35,8 +38,8 @@ app.get('/:roomId', (req, res) => {
     res.render('index', { RoomId: req.params.roomId });
 });
 
-httpsServer.listen(config.listenPort, () => {
-    console.log('listening https ' + config.listenPort)
+http.listen(config.listenPort, () => {
+    console.log('listening http ' + config.listenPort)
 })
 
 

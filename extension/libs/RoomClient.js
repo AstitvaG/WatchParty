@@ -133,14 +133,13 @@ class RoomClient {
             }, callback, errback) {
                 try {
                     console.log('Kind : ', kind);
-                    const {
-                        producer_id
-                    } = await this.socket.request('produce', {
-                        producerTransportId: this.producerTransport.id,
-                        kind,
-                        rtpParameters,
-                        isHost: true
-                    });
+                    const { producer_id } = await this.socket.request('produce',
+                        {
+                            producerTransportId: this.producerTransport.id,
+                            kind,
+                            rtpParameters,
+                            isHost: true
+                        });
                     callback({
                         id: producer_id
                     });
@@ -152,17 +151,12 @@ class RoomClient {
             this.producerTransport.on('connectionstatechange', function (state) {
                 switch (state) {
                     case 'connecting':
-
                         break;
-
                     case 'connected':
-                        //localVideo.srcObject = stream
                         break;
-
                     case 'failed':
                         this.producerTransport.close();
                         break;
-
                     default:
                         break;
                 }
@@ -222,19 +216,11 @@ class RoomClient {
             this.removeConsumer(consumer_id)
         }.bind(this))
 
-        /**
-         * data: [ {
-         *  producer_id:
-         *  producer_socket_id:
-         * }]
-         */
         this.socket.on('newProducers', async function (data) {
             this.host_id = await this.socket.request('getHost')
             console.log("HostId: ", this.host_id)
             console.log('new producers', data)
-            for (let {
-                producer_id
-            } of data) {
+            for (let { producer_id } of data) {
                 await this.consume(producer_id)
             }
         }.bind(this))
@@ -242,8 +228,6 @@ class RoomClient {
         this.socket.on('disconnect', function () {
             this.exit(true)
         }.bind(this))
-
-
     }
 
 
@@ -285,16 +269,17 @@ class RoomClient {
                 break;
             default:
                 return
-                break;
         }
         if (!this.device.canProduce('video') && !audio) {
             console.error('cannot produce video');
             return;
         }
-        if (this.producerLabel.has(type)) {
-            console.log('producer already exists for this type ' + type)
-            return
-        }
+
+        // if (this.producerLabel.has(type)) {
+        //     console.log('producer already exists for this type ' + type)
+        //     return
+        // }
+
         // console.log('mediacontraints:', mediaConstraints)
         let stream;
         try {
@@ -302,7 +287,21 @@ class RoomClient {
                 ? await (async () => {
                     let vidStream;
                     try {
-                        vidStream = window.document.querySelectorAll("video")[0].captureStream();
+                        var v = window.document.querySelectorAll("video")[0];
+                        vidStream = v.captureStream()
+
+                        // v.addEventListener('abort', (e) => this.closeProducer(type))
+                        v.addEventListener('emptied', (e) => {
+                            this.closeProducer(mediaType.screen);
+                            v.addEventListener('loadeddata', (e) => {
+                                rc.produce(mediaType.screen);
+                            }, {once: true});
+                        })
+
+                        // v.addEventListener('durationchange', (e) => this.socket.emit('hostData', { duration: v.duration }))
+                        // v.addEventListener('pause', (e) => this.socket.emit('hostData', { paused: true, buffer: false }))
+                        // v.addEventListener('timeupdate', (e) => this.socket.emit('hostData', { time: v.currentTime, paused: false, buffer: false }))
+                        // v.addEventListener('waiting', (e) => this.socket.emit('hostData', { buffer: true, paused: false }))
                     }
                     catch {
                         vidStream = await navigator.mediaDevices.getDisplayMedia({
@@ -316,7 +315,7 @@ class RoomClient {
                             video: {
                                 width: 1920,
                                 height: 1080,
-                                frameRate: 30,
+                                frameRate: 60,
                                 latency: 0
                             }
                         });
@@ -324,7 +323,8 @@ class RoomClient {
                     return vidStream
                 })()
                 : await navigator.mediaDevices.getUserMedia(mediaConstraints)
-            console.log(navigator.mediaDevices.getSupportedConstraints())
+
+            console.group("HI0")
 
             let enc = [{
                 rid: 'r0',
@@ -344,24 +344,25 @@ class RoomClient {
             }
             ];
 
-            const tracks = audio ? [stream.getAudioTracks()[0]] : screen ? [stream.getVideoTracks()[0], stream.getAudioTracks()[0]] : [stream.getVideoTracks()[0]]
-            const cb = (producer) => {
+            const tracks = audio
+                ? [stream.getAudioTracks()[0]]
+                : screen
+                    ? [stream.getVideoTracks()[0], stream.getAudioTracks()[0]]
+                    : [stream.getVideoTracks()[0]]
 
+            const cb = (producer, idx) => {
                 console.log('producer', producer)
 
                 this.producers.set(producer.id, producer)
+                this.producerLabel.set(type + '-' + idx, producer.id)
+                console.log(this.producerLabel)
 
                 let elem
                 if (!audio) {
                     elem = document.createElement('video')
                     elem.srcObject = stream
                     elem.id = producer.id
-                    elem.addEventListener('loadedmetadata', () => {
-                        elem.play()
-                    })
-                    // elem.playsinline = false
-                    // elem.autoplay = true
-                    // elem.className = "vid"
+                    elem.addEventListener('loadedmetadata', elem.play)
                     this.localMediaEl.appendChild(elem)
                 }
 
@@ -378,7 +379,6 @@ class RoomClient {
                         elem.parentNode.removeChild(elem)
                     }
                     this.producers.delete(producer.id)
-
                 })
 
                 producer.on('close', () => {
@@ -390,12 +390,10 @@ class RoomClient {
                         elem.parentNode.removeChild(elem)
                     }
                     this.producers.delete(producer.id)
-
                 })
 
-                this.producerLabel.set(type, producer.id)
             }
-            tracks.forEach(track => {
+            tracks.forEach((track, idx) => {
                 const params = {
                     track
                 };
@@ -407,7 +405,7 @@ class RoomClient {
                         videoGoogleStartBitrate: 1000
                     };
                 }
-                this.producerTransport.produce(params).then(cb);
+                this.producerTransport.produce(params).then((producer => cb(producer, idx)));
             })
             switch (type) {
                 case mediaType.audio:
@@ -510,26 +508,31 @@ class RoomClient {
     }
 
     closeProducer(type) {
-        if (!this.producerLabel.has(type)) {
+        if (!this.producerLabel.has(type + '-0') && !this.producerLabel.has(type + '-1')) {
             console.log('there is no producer for this type ' + type)
             return
         }
-        let producer_id = this.producerLabel.get(type)
-        console.log(producer_id)
-        this.socket.emit('producerClosed', {
-            producer_id
-        })
-        this.producers.get(producer_id).close()
-        this.producers.delete(producer_id)
-        this.producerLabel.delete(type)
-
-        if (type !== mediaType.audio) {
-            let elem = document.getElementById(producer_id)
-            elem.srcObject.getTracks().forEach(function (track) {
-                track.stop()
+        const cb = (idx) => {
+            let producer_id = this.producerLabel.get(type + "-" + idx)
+            console.log(producer_id)
+            this.socket.emit('producerClosed', {
+                producer_id
             })
-            elem.parentNode.removeChild(elem)
+            this.producers.get(producer_id).close()
+            this.producers.delete(producer_id)
+            this.producerLabel.delete(type)
+
+            if (type !== mediaType.audio) {
+                let elem = document.getElementById(producer_id)
+                elem && elem.srcObject.getTracks().forEach(function (track) {
+                    track.stop()
+                })
+                elem && elem.parentNode.removeChild(elem)
+            }
         }
+
+        if (this.producerLabel.has(type + '-0')) cb(0);
+        if (this.producerLabel.has(type + '-1')) cb(1);
 
         switch (type) {
             case mediaType.audio:

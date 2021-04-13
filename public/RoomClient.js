@@ -228,8 +228,19 @@ class RoomClient {
          * }]
          */
         this.socket.on('newProducers', async function (data) {
-            this.host_id = await this.socket.request('getHost')
-            console.log("HostId: ", this.host_id)
+            let new_hosts = await this.socket.request('getHost')
+            if (this.host_id && this.host_id != new_hosts) {
+                // console.log("New MS inst", this.host_id, new_hosts)
+                if (this.host_id[0] != new_hosts[0]) {
+                    hostStream.getVideoTracks().forEach(track => { track.stop(); hostStream.removeTrack(track) });
+                    console.log("Changed Video from host");
+                }
+                if (this.host_id[1] != new_hosts[1]) {
+                    hostStream.getAudioTracks().forEach(track => { track.stop(); hostStream.removeTrack(track) });
+                    console.log("Changed Audio from host");
+                }
+            }
+            this.host_id = new_hosts;
             console.log('new producers', data)
             for (let {
                 producer_id
@@ -409,28 +420,36 @@ class RoomClient {
         }) {
 
             this.consumers.set(consumer.id, consumer)
+            console.log(kind, consumer.id);
 
             let elem;
             if (kind === 'video') {
-                elem = document.createElement('video')
-                if (producer_id == this.host_id[0]) {
+                if (producer_id == this.host_id[0] && this.hostVideoEl.children.length > 0) {
+                    elem = this.hostVideoEl.children[0];
                     hostStream.addTrack(stream.getVideoTracks()[0]);
-                    elem.srcObject = hostStream;
+                    elem.id = consumer.id
                 }
-                else
-                    elem.srcObject = stream
+                else {
+                    elem = document.createElement('video')
+                    if (producer_id == this.host_id[0]) {
+                        hostStream.addTrack(stream.getVideoTracks()[0]);
+                        elem.srcObject = hostStream;
+                    }
+                    else
+                        elem.srcObject = stream
 
-                elem.id = consumer.id
-                elem.addEventListener('loadedmetadata', elem.play)
-                if (this.host_id[0] == producer_id && this.hostVideoEl.children.length == 0)
-                    this.hostVideoEl.appendChild(elem)
-                else
-                    this.localMediaEl.appendChild(elem)
+                    elem.id = consumer.id
+                    elem.addEventListener('loadedmetadata', elem.play)
+                    if (this.host_id[0] == producer_id && this.hostVideoEl.children.length == 0)
+                        this.hostVideoEl.appendChild(elem)
+                    else
+                        this.localMediaEl.appendChild(elem)
+                }
             } else {
                 try {
                     if (this.host_id[1] != producer_id) throw ""
-                    console.log("Host stream A/V");
                     hostStream.addTrack(stream.getAudioTracks()[0]);
+                    console.log("Host stream A/V");
                 }
                 catch (e) {
                     console.log("Fallback", e)
@@ -551,9 +570,11 @@ class RoomClient {
 
     removeConsumer(consumer_id) {
         let elem = document.getElementById(consumer_id)
+        console.log("Element", elem, elem.parentElement);
         elem.srcObject.getTracks().forEach(function (track) {
             track.stop()
         })
+        console.log("Closing heere", consumer_id, document.getElementById(consumer_id));
         elem.parentNode.removeChild(elem)
 
         this.consumers.delete(consumer_id)

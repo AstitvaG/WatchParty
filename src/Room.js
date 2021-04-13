@@ -10,6 +10,13 @@ module.exports = class Room {
         }).then(function (router) {
             this.router = router
         }.bind(this))
+        
+        // Array of objs : Message(object) {
+        //     messageText: String,
+        //     messageSender: Peer,
+                // time: new Date()
+        // }
+        this.messageList = []
 
         this.peers = new Map()
         this.io = io
@@ -21,6 +28,16 @@ module.exports = class Room {
 
     getHost() {
         return [this.host_id_v, this.host_id_a];
+    }
+
+    getAllMsgs() {
+        return this.messageList;
+    }
+
+    addNewMsg(peerId, msg){
+        // msgLis.pb({
+
+        // })
     }
 
     addPeer(peer) {

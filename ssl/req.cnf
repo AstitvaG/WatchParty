@@ -1,0 +1,4 @@
+[req]
+distinguished_name=req
+[SAN]
+subjectAltName=DNS:www.example.com
