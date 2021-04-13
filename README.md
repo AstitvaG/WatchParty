@@ -102,7 +102,7 @@ WatchPlus
 
 ### Known issues
 - [x] There is a de-sync in audio video stream from host
-- [x] When directly sharing a video, and either its src changes (ex. yt ads) or the video ends, transmission freeses
+- [x] When directly sharing a video, and either its src changes (ex. yt ads) or the video ends, transmission freezes
 - [ ] Extension popup closes when share popup comes, thus link not copied.
 - [x] Site on accessable even from within the same network
 - [ ] Still on HTTP, so extension can't be run on websites directly.
