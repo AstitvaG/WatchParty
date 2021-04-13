@@ -225,6 +225,30 @@ class RoomClient {
             }
         }.bind(this))
 
+        this.socket.on('play', () => {
+            console.log("Remote play called");
+            try {
+                document.querySelectorAll('video')[0].play()
+                this.socket.emit('played')
+            } catch { }
+        })
+
+        this.socket.on('pause', () => {
+            console.log("Remote pause called");
+            try {
+                document.querySelectorAll('video')[0].pause()
+                this.socket.emit('paused')
+            } catch { }
+        })
+
+        this.socket.on('seekTo', time => {
+            console.log('Remote seek called', time);
+            try {
+                document.querySelectorAll('video')[0].currentTime = time
+            } catch { }
+        })
+
+
         this.socket.on('disconnect', function () {
             this.exit(true)
         }.bind(this))
@@ -293,13 +317,14 @@ class RoomClient {
                         // v.addEventListener('abort', (e) => this.closeProducer(type))
                         v.addEventListener('emptied', (e) => {
                             this.closeProducer(mediaType.screen);
-                            v.addEventListener('loadeddata', (e) => {
+                            v.addEventListener('canplaythrough', (e) => {
                                 rc.produce(mediaType.screen);
-                            }, {once: true});
+                            }, { once: true });
                         })
 
-                        // v.addEventListener('durationchange', (e) => this.socket.emit('hostData', { duration: v.duration }))
-                        // v.addEventListener('pause', (e) => this.socket.emit('hostData', { paused: true, buffer: false }))
+                        v.addEventListener('durationchange', (e) => this.socket.emit('durationed', v.duration))
+                        v.addEventListener('pause', (e) => this.socket.emit('paused'))
+                        v.addEventListener('playing', (e) => this.socket.emit('played'))
                         // v.addEventListener('timeupdate', (e) => this.socket.emit('hostData', { time: v.currentTime, paused: false, buffer: false }))
                         // v.addEventListener('waiting', (e) => this.socket.emit('hostData', { buffer: true, paused: false }))
                     }
@@ -324,8 +349,6 @@ class RoomClient {
                 })()
                 : await navigator.mediaDevices.getUserMedia(mediaConstraints)
 
-            console.group("HI0")
-
             let enc = [{
                 rid: 'r0',
                 maxBitrate: 100000,
@@ -347,7 +370,7 @@ class RoomClient {
             const tracks = audio
                 ? [stream.getAudioTracks()[0]]
                 : screen
-                    ? [stream.getVideoTracks()[0], stream.getAudioTracks()[0]]
+                    ? [stream.getAudioTracks()[0], stream.getVideoTracks()[0]]
                     : [stream.getVideoTracks()[0]]
 
             const cb = (producer, idx) => {
@@ -514,7 +537,7 @@ class RoomClient {
         }
         const cb = (idx) => {
             let producer_id = this.producerLabel.get(type + "-" + idx)
-            console.log(producer_id)
+            console.log("Closing", producer_id)
             this.socket.emit('producerClosed', {
                 producer_id
             })
