@@ -229,8 +229,8 @@ class RoomClient {
          */
         this.socket.on('newProducers', async function (data) {
             let new_hosts = await this.socket.request('getHost')
+            // console.log("New MS inst", new_hosts)
             if (this.host_id && this.host_id != new_hosts) {
-                // console.log("New MS inst", this.host_id, new_hosts)
                 if (this.host_id[0] != new_hosts[0]) {
                     hostStream.getVideoTracks().forEach(track => { track.stop(); hostStream.removeTrack(track) });
                     console.log("Changed Video from host");
@@ -241,6 +241,7 @@ class RoomClient {
                 }
             }
             this.host_id = new_hosts;
+            handleInit(new_hosts[2]);
             console.log('new producers', data)
             for (let {
                 producer_id
@@ -251,25 +252,42 @@ class RoomClient {
 
         this.socket.on('paused', () => {
             console.log("Paused")
-            document.getElementById('controlDiv').classList.add('paused');
+            controlDiv.classList.add('paused');
+            startTime(0);
         })
 
         this.socket.on('played', () => {
             console.log("Played")
-            document.getElementById('controlDiv').classList.remove('paused');
+            controlDiv.classList.remove('paused');
+            startTime();
+        })
+
+        this.socket.on('ratech', (rate) => {
+            initdetails.rate = rate;
+            startTime(rate)
+            console.log("Rate changed");
         })
 
         this.socket.on('durationed', (duration) => {
             console.log("Duration Changed")
             if (duration) {
-                document.getElementById('timeSelect').max = duration;
-                document.getElementById('durationTime').innerHTML = secondsToTime(duration);
+                timeSelect.max = duration;
+                durationTime.innerHTML = secondsToTime(duration);
             }
         })
 
-        this.socket.on('timed', (time) => {
-            if(time==0 || time){
-                document.getElementById('timeSelect').value = time;
+        this.socket.on('timed', (details) => {
+            console.log("Timed", details);
+            if (details.duration) {
+                console.log("HX");
+                timeSelect.max = details.duration;
+                durationTime.innerHTML = secondsToTime(details.duration);
+            }
+            if (details.time === 0 || details.time) {
+                console.log("here")
+                timeSelect.value = details.time;
+                currTime.innerHTML = secondsToTime(details.time);
+                controlDiv.classList.remove('paused');
             }
         })
 
@@ -471,7 +489,7 @@ class RoomClient {
             } else {
                 try {
                     if (this.host_id[1] != producer_id) throw ""
-                    hostStream.getAudioTracks().forEach(track => {track.stop(); hostStream.removeTrack(track);})
+                    hostStream.getAudioTracks().forEach(track => { track.stop(); hostStream.removeTrack(track); })
                     hostStream.addTrack(stream.getAudioTracks()[0]);
                     console.log("Host stream A/V", stream.getAudioTracks().length);
                 }

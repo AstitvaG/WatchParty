@@ -1,26 +1,6 @@
 const socket = io()
 
 
-const dropdowns = document.querySelectorAll('.dropdown');
-
-dropdowns.forEach(dropdown => {
-    dropdown.addEventListener('click', (e) => {
-        dropdown.classList.toggle('dropdown__options--visible')
-    })
-
-    // dropdown.querySelectorAll('.dropdown__options .dropdown__option').forEach(opt => {
-    //     opt.addEventListener('click', (e) => {
-    //         dropdown.querySelector('.dropdown__selected').innerHTML = opt.innerHTML;
-    //         dropdown.querySelector('.dropdown__option--selected').classList.remove('dropdown__option--selected');
-    //         opt.classList.add('dropdown__option--selected');
-    //     })
-    // })
-})
-
-// if (location.href.substr(0, 5) !== 'https')
-//     location.href = 'https' + location.href.substr(4, location.href.length - 4)
-
-
 socket.request = function request(type, data = {}) {
     return new Promise((resolve, reject) => {
         socket.emit(type, data, (data) => {
@@ -36,18 +16,7 @@ socket.request = function request(type, data = {}) {
 
 let rc = null
 let producer = null;
-
-var videoDiv = document.getElementById('videoDiv')
-var audioDiv = document.getElementById('audioDiv')
-var hostDiv = document.getElementById('hostDiv')
-var audioSelect = document.getElementById('audioSelect')
-var videoSelect = document.getElementById('videoSelect')
-var timeSelect = document.getElementById('timeSelect')
-var currTime = document.getElementById('currTime')
-var newChat = document.getElementById('newChat')
-var controlDiv = document.getElementById('controlDiv')
-var controllerDiv = document.getElementById('controllerDiv')
-
+let initdetails = null;
 
 function joinRoom(name, room_id) {
     if (rc && rc.isOpen()) {
@@ -190,6 +159,41 @@ controllerDiv.addEventListener('mouseleave', () => {
     controllerDiv.classList.remove('active');
 })
 
+
+var time_interval = null;
+function startTime(rate = initdetails.rate) {
+    if (time_interval) {
+        clearInterval(time_interval);
+        time_interval = null;
+    }
+    if (rate !== 0)
+        time_interval = setInterval(() => {
+            console.log(1 + Number(timeSelect.value), "=>", secondsToTime(1 + Number(timeSelect.value)));
+            currTime.innerHTML = secondsToTime(1+ Number(timeSelect.value))
+            timeSelect.stepUp()
+        }, 1000 / rate)
+}
+
+function handleInit(details) {
+    initdetails = details
+    if (details.paused)
+        controlDiv.classList.add('paused');
+    else
+        controlDiv.classList.remove('paused');
+    if (details.duration) {
+        durationTime.innerHTML = secondsToTime(details.duration)
+        timeSelect.max = details.duration
+    }
+    if (details.time == 0 || details.time) {
+        timeSelect.value = Number(details.time)
+        currTime.innerHTML = secondsToTime(details.time)
+    }
+    if (details.rate && !details.paused) {
+        startTime();
+    }
+
+}
+
 document.addEventListener('keypress', (e) => {
     if (newChat != document.activeElement) {
         if (e.key == "f")
@@ -254,3 +258,24 @@ function toggleFullScreen() {
     document.getElementById('controllerDiv').classList.toggle('big-host');
     document.getElementById('controlDiv').classList.toggle('big-host');
 }
+
+
+const dropdowns = document.querySelectorAll('.dropdown');
+
+dropdowns.forEach(dropdown => {
+    dropdown.addEventListener('click', (e) => {
+        dropdown.classList.toggle('dropdown__options--visible')
+    })
+
+    // dropdown.querySelectorAll('.dropdown__options .dropdown__option').forEach(opt => {
+    //     opt.addEventListener('click', (e) => {
+    //         dropdown.querySelector('.dropdown__selected').innerHTML = opt.innerHTML;
+    //         dropdown.querySelector('.dropdown__option--selected').classList.remove('dropdown__option--selected');
+    //         opt.classList.add('dropdown__option--selected');
+    //     })
+    // })
+})
+
+// if (location.href.substr(0, 5) !== 'https')
+//     location.href = 'https' + location.href.substr(4, location.href.length - 4)
+

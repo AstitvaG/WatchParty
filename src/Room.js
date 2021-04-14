@@ -4,17 +4,24 @@ module.exports = class Room {
         this.id = room_id
         this.host_id_a = 'none'
         this.host_id_v = 'none'
+        this.host_config = {
+            duration: 0,
+            paused: true,
+            rate: 1,
+            time: 0,
+            date: new Date(),
+        }
         const mediaCodecs = config.mediasoup.router.mediaCodecs
         worker.createRouter({
             mediaCodecs
         }).then(function (router) {
             this.router = router
         }.bind(this))
-        
+
         // Array of objs : Message(object) {
         //     messageText: String,
         //     messageSender: Peer,
-                // time: new Date()
+        // time: new Date()
         // }
         this.messageList = []
 
@@ -28,14 +35,30 @@ module.exports = class Room {
     }
 
     getHost() {
-        return [this.host_id_v, this.host_id_a];
+        console.log(this.host_config.time,new Date() - this.host_config.date, Number(this.host_config.time) + Number(new Date() - this.host_config.date)/1000)
+        return [this.host_id_v, this.host_id_a, {
+            duration: this.host_config.duration,
+            paused: this.host_config.paused,
+            rate: this.host_config.rate,
+            time: Number(this.host_config.time) + Number(new Date() - this.host_config.date)/1000,
+        }];
     }
 
     getAllMsgs() {
         return this.messageList;
     }
 
-    addNewMsg(peerId, msg){
+    setHostConfig(details) {
+        console.log("Was :", this.host_config)
+        this.host_config = {
+            ...this.host_config,
+            ...details,
+            date: new Date,
+        }
+        console.log("New :", this.host_config)
+    }
+
+    addNewMsg(peerId, msg) {
         // msgLis.pb({
 
         // })
@@ -109,11 +132,12 @@ module.exports = class Room {
 
     }
 
-    async produce(socket_id, producerTransportId, rtpParameters, kind, isHost) {
+    async produce(socket_id, producerTransportId, rtpParameters, kind, isHost, initConfig) {
         // handle undefined errors
         return new Promise(async function (resolve, reject) {
             let producer = await this.peers.get(socket_id).createProducer(producerTransportId, rtpParameters, kind)
             isHost && this.setHost(producer.id, kind, socket_id)
+            isHost && initConfig && this.setHostConfig(initConfig);
             resolve(producer.id)
             this.broadCast(socket_id, 'newProducers', [{
                 producer_id: producer.id,

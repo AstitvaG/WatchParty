@@ -97,7 +97,7 @@ WatchPlus
 - [x] Chat microinteractions
 - [x] Play/Pause part
 - [x] Jump to time and Slider part
-- [ ] Show current time and duration in Client side
+- [x] Show current time and duration in Client side
 - [ ] HTML/CSS injection on Host
 - [ ] Deployment and Testing
 

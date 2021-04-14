@@ -133,12 +133,23 @@ class RoomClient {
             }, callback, errback) {
                 try {
                     console.log('Kind : ', kind);
+                    var initConfig = {};
+                    try {
+                        var v = window.document.querySelectorAll("video")[0];
+                        initConfig = {
+                            duration: v.duration,
+                            paused: v.paused,
+                            rate: v.playbackRate,
+                            time: v.currentTime
+                        }
+                    } catch { }
                     const { producer_id } = await this.socket.request('produce',
                         {
                             producerTransportId: this.producerTransport.id,
                             kind,
                             rtpParameters,
-                            isHost: true
+                            isHost: true,
+                            initConfig
                         });
                     callback({
                         id: producer_id
@@ -325,7 +336,8 @@ class RoomClient {
                         v.addEventListener('durationchange', (e) => this.socket.emit('durationed', v.duration))
                         v.addEventListener('pause', (e) => this.socket.emit('paused'))
                         v.addEventListener('playing', (e) => this.socket.emit('played'))
-                        // v.addEventListener('timeupdate', (e) => this.socket.emit('hostData', { time: v.currentTime, paused: false, buffer: false }))
+                        v.addEventListener('ratechange', (e) => {this.socket.emit('ratech', v.playbackRate);console.log("Ratech");})
+                        // v.addEventListener('timeupdate', (e) => this.socket.emit('timed', { time: v.currentTime, duration: v.duration, rate: v.playbackRate }))
                         // v.addEventListener('waiting', (e) => this.socket.emit('hostData', { buffer: true, paused: false }))
                     }
                     catch {

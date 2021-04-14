@@ -172,10 +172,16 @@ io.on('connection', socket => {
         console.log("Durationed Called from Host", duration);
     })
 
-    socket.on('timed', (time) => {
+    socket.on('timed', (details) => {
         let room = roomList.get(socket.room_id)
-        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'timed', time)
-        console.log("Timed Called from Host", time);
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'timed', details)
+        console.log("Timed Called from Host", details);
+    })
+
+    socket.on('ratech', (rate) => {
+        let room = roomList.get(socket.room_id)
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'ratech', rate)
+        console.log("Ratech Called from Host", rate);
     })
 
     socket.on('getHost', (_, callback) => {
@@ -235,14 +241,15 @@ io.on('connection', socket => {
         kind,
         rtpParameters,
         producerTransportId,
-        isHost
+        isHost,
+        initConfig
     }, callback) => {
 
         if (!roomList.has(socket.room_id)) {
             return callback({ error: 'not is a room' })
         }
 
-        let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind, isHost)
+        let producer_id = await roomList.get(socket.room_id).produce(socket.id, producerTransportId, rtpParameters, kind, isHost, initConfig)
         console.log(`---produce--- type: ${kind} name: ${roomList.get(socket.room_id).getPeers().get(socket.id).name} id: ${producer_id}`)
         callback({
             producer_id
