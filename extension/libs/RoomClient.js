@@ -337,6 +337,8 @@ class RoomClient {
                         v.addEventListener('pause', (e) => this.socket.emit('paused'))
                         v.addEventListener('playing', (e) => this.socket.emit('played'))
                         v.addEventListener('ratechange', (e) => {this.socket.emit('ratech', v.playbackRate);console.log("Ratech");})
+                        v.addEventListener('seeked', () => {this.socket.emit('timed', v.currentTime);console.log("Seeked", v.currentTime);});
+
                         // v.addEventListener('timeupdate', (e) => this.socket.emit('timed', { time: v.currentTime, duration: v.duration, rate: v.playbackRate }))
                         // v.addEventListener('waiting', (e) => this.socket.emit('hostData', { buffer: true, paused: false }))
                     }

@@ -276,18 +276,11 @@ class RoomClient {
             }
         })
 
-        this.socket.on('timed', (details) => {
-            console.log("Timed", details);
-            if (details.duration) {
-                console.log("HX");
-                timeSelect.max = details.duration;
-                durationTime.innerHTML = secondsToTime(details.duration);
-            }
-            if (details.time === 0 || details.time) {
-                console.log("here")
-                timeSelect.value = details.time;
-                currTime.innerHTML = secondsToTime(details.time);
-                controlDiv.classList.remove('paused');
+        this.socket.on('timed', (time) => {
+            console.log("Timed", time);
+            if (time === 0 || time) {
+                timeSelect.value = time;
+                currTime.innerHTML = secondsToTime(time);
             }
         })
 

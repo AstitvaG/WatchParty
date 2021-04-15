@@ -168,7 +168,6 @@ function startTime(rate = initdetails.rate) {
     }
     if (rate !== 0)
         time_interval = setInterval(() => {
-            console.log(1 + Number(timeSelect.value), "=>", secondsToTime(1 + Number(timeSelect.value)));
             currTime.innerHTML = secondsToTime(1+ Number(timeSelect.value))
             timeSelect.stepUp()
         }, 1000 / rate)

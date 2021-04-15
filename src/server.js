@@ -172,10 +172,10 @@ io.on('connection', socket => {
         console.log("Durationed Called from Host", duration);
     })
 
-    socket.on('timed', (details) => {
+    socket.on('timed', (time) => {
         let room = roomList.get(socket.room_id)
-        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'timed', details)
-        console.log("Timed Called from Host", details);
+        if (room && room.host_socket_id) room.broadCast(room.host_socket_id, 'timed', time)
+        console.log("Timed Called from Host", time);
     })
 
     socket.on('ratech', (rate) => {
