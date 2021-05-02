@@ -98,8 +98,8 @@ WatchPlus
 - [x] Play/Pause part
 - [x] Jump to time and Slider part
 - [x] Show current time and duration in Client side
-- [ ] HTML/CSS injection on Host
-- [ ] Deployment and Testing
+- [x] HTML/CSS injection on Host
+- [x] Deployment and Testing
 
 ### Known issues
 - [x] There is a de-sync in the audio-video stream from the host
@@ -107,7 +107,7 @@ WatchPlus
 - [x] Extension popup closes when share popup comes, thus link not copied.
 - [x] Site on accessible even from within the same network
 - [ ] Still on HTTP, so extension can't be run on websites directly.
-- [ ] Noise in audio when stream changed multiple times
+- [x] Noise in audio when stream changed multiple times
 
 ### Currently, for running on websites,
 - Type `chrome://settings/content/insecureContent` in chrome URL bar.
