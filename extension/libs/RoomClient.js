@@ -259,7 +259,6 @@ class RoomClient {
             } catch { }
         })
 
-
         this.socket.on('disconnect', function () {
             this.exit(true)
         }.bind(this))

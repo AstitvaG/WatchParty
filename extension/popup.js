@@ -36,11 +36,11 @@ chrome.runtime.onMessage.addListener(
 );
 
 joinExisting.addEventListener("click", async () => {
-	window.open('http:\/\/10.1.102.27:3016', '_blank')
+	window.open('http:\/\/10.1.98.67:3016', '_blank')
 });
 
 document.getElementById("copyLink").addEventListener("click", async () => {
-	copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
+	copyTextToClipboard('http:\/\/10.1.98.67:3016\/' + document.room_id)
 });
 
 
@@ -76,7 +76,7 @@ document.getElementById("copyLink").addEventListener("click", async () => {
 			document.getElementById("startStreaming").classList.toggle('hidden');
 			document.getElementById("joinExisting").classList.toggle('hidden');
 			document.getElementById("copyLink").classList.toggle('hidden');
-			copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
+			copyTextToClipboard('http:\/\/10.1.98.67:3016\/' + document.room_id)
 		}
 	});
 })()

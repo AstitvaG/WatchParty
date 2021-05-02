@@ -283,6 +283,18 @@ class RoomClient {
                 currTime.innerHTML = secondsToTime(time);
             }
         })
+        this.socket.on('sentMsg', ({Name,Msg}) => {
+            console.log("sentMsg received")
+            var newChat =chatMsg.cloneNode()
+            newChat.getElementById("sMsg").innerHTML  = Msg
+            newChat.getElementById("sName").innerHTML = Name
+            newChat.id = Math.random(1000);
+            chatDiv.appendChild(newChat);
+
+
+    
+        })
+
 
         this.socket.on('disconnect', function () {
             this.exit(true)

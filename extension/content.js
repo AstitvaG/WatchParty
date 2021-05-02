@@ -1,5 +1,5 @@
 console.log("Modules loded")
-var socket = io("http://10.1.102.27:3016")
+var socket = io("http://10.1.98.67:3016")
 
 socket.request = function request(type, data = {}) {
     return new Promise((resolve, reject) => {
@@ -30,10 +30,11 @@ function joinRoom(name, room_id) {
     }
 }
 
+
 (async () => {
     room_id = await socket.request('getNewRoom');
     console.log(document.name)
-    console.log('http://10.1.102.27:3016/'+room_id, document.name)
+    console.log('http://10.1.98.67:3016/'+room_id, document.name)
     chrome.runtime.sendMessage({ room_id, name: document.name })
     document.room_id = room_id
     joinRoom(document.name, room_id)

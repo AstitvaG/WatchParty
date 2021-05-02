@@ -478,17 +478,17 @@
       <div id="chatDiv" data-simplebar>
         <!-- chat message -->
 
-        <div style="margin: 5px; display:flex;position: relative;">
+        <div id="chatMsg" style="margin: 5px; display:flex;position: relative;">
           <!-- photo/emoji -->
           <div
             style="background: #333;height: 60px;width: 60px;z-index: 2;position: absolute; margin-top: 20.5px;border-radius: 50%;">
           </div>
           <div
             style="background: #141414;min-height: 80px;max-height:200px;overflow-y:auto;overflow-x:none;width: 300px;z-index: 1;margin: 10px;margin-left: 50px;border-radius: 10px;">
-            <div
+            <div id="sName"
               style="color:#6996ff;font-size: 18px;margin: 15px;margin-left: 20px;margin-bottom:0;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;width: 200px;display: inline-block;">
               Sender Name</div>
-            <p style="color:white;font-size: 18px;margin: 10px;margin-left: 20px;margin-top:0px;margin-bottom: 18px;">
+            <p id="sMsg" style="color:white;font-size: 18px;margin: 10px;margin-left: 20px;margin-top:0px;margin-bottom: 18px;">
               Messages
             </p>
           </div>
@@ -497,7 +497,7 @@
       <div style="position: absolute;bottom: 3px;display: flex;width:20vw;justify-content: center;">
         <input id="newChat"
           style="color:white;width: 80%; height: 40px;background-color: #141414;border: none;padding: 5px;padding-left: 20px;padding-right: 20px; font-size: 18px;border-radius: 15px;margin: 10px;"
-          placeholder="Type a message" />
+          placeholder="Type a message"   value="" />
       </div>
     </div>
   </div>

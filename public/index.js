@@ -18,6 +18,12 @@ let rc = null
 let producer = null;
 let initdetails = null;
 
+
+function sendMsg(Name,Room,Msg)
+{
+    socket.emit('sendMsg',{Name,Room,Msg});   
+}
+
 function joinRoom(name, room_id) {
     if (rc && rc.isOpen()) {
         console.log('already connected to a room')
@@ -51,6 +57,20 @@ function joinRoom(name, room_id) {
             document.getElementById('modal').classList.toggle('hidden')
         }
     })
+    document.getElementById('newChat').addEventListener("keydown", function (e) {
+        if (e.code === "Enter") {  //checks whether the pressed key is "Enter"
+            // console.log(document.getElementById('newChat').value);
+            
+            if(document.getElementById('newChat').value != '')
+            {
+                sendMsg(nameInp.value, roomInp.value,document.getElementById('newChat').value);
+                // console.log(nameInp.value);
+                // console.log(roomInp.value);
+                // console.log(document.getElementById('newChat').value);
+            }
+        }
+    });
+
 })()
 
 
