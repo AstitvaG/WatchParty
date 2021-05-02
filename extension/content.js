@@ -30,6 +30,36 @@ function joinRoom(name, room_id) {
     }
 }
 
+function fallbackCopyTextToClipboard(text) {
+    var textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+    } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+    }
+    document.body.removeChild(textArea);
+}
+function copyTextToClipboard(text) {
+    if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function () {
+        console.log('Async: Copying to clipboard was successful!');
+    }, function (err) {
+        console.error('Async: Could not copy text: ', err);
+    });
+}
+
 (async () => {
     room_id = await socket.request('getNewRoom');
     console.log(document.name)
@@ -43,5 +73,20 @@ function joinRoom(name, room_id) {
         console.log(chatHost)
         chatHost.innerHTML = html
         document.body.append(chatHost);
+        document.getElementById('meetLink').href = 'http://192.168.43.136:3016/' + room_id;
+        document.getElementById('meetLink').innerHTML = 'http://192.168.43.136:3016/' + room_id;
+        document.getElementById('copyLink').addEventListener('click', () => {
+            copyTextToClipboard('http://192.168.43.136:3016/' + room_id)
+        })
+        document.getElementById('newChat').addEventListener("keydown", (e) => {
+            if (e.code === "Enter") {  //checks whether the pressed key is "Enter"
+                // console.log(document.getElementById('newChat').value);
+
+                if (document.getElementById('newChat').value != '') {
+                    socket.emit('sendMsg', { Name: document.name, Room: room_id, Msg: document.getElementById('newChat').value });
+                    document.getElementById('newChat').value = ""
+                }
+            }
+        });
     })
 })();

@@ -10,7 +10,7 @@
       margin: 0;
     }
 
-    html {
+    .body {
       background: black;
       font-family: Ubuntu, sans-serif;
     }
@@ -120,7 +120,7 @@
       align-items: center;
       background: linear-gradient(rgba(0, 0, 0, 0) 85%, rgba(0, 0, 0, 0.2) 100%);
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
-      text-shadow: rgba(0,0,0,0.6) 2px 2px;
+      text-shadow: rgba(0, 0, 0, 0.6) 2px 2px;
     }
 
 
@@ -145,7 +145,7 @@
       transition: all cubic-bezier(0.075, 0.82, 0.165, 1) 0.75s;
     }
 
-    button {
+    button.here {
       height: 32px;
       padding-right: 15px;
       padding-left: 15px;
@@ -415,9 +415,14 @@
 </head>
 
 <body>
-  <div style="flex-direction:row;display:flex;max-width: 100vw;max-height: 100vh;overflow: hidden;pointer-events: none;">
-    <button id="toggleBtn" onclick="toggleFullScreen()"
-      style="position: absolute;top: 1vh;right: 1vh;width: 50px;height: 50px;background: #141414;font-size: 25px;padding: 0;z-index: 3;">
+  <div
+    style="flex-direction:row;display:flex;max-width: 100vw;max-height: 100vh;overflow: hidden;pointer-events: none;">
+    <button class="here" id="toggleBtn" onclick="
+    document.getElementById('chatParent').classList.toggle('hidden-x');
+    // document.getElementById('videoDiv').classList.toggle('hidden-y');
+    document.getElementById('hostDiv').classList.toggle('big-host');
+    document.getElementById('toggleBtn').classList.toggle('change');"
+      style="position: absolute;top: 1vh;right: 2vh;width: 50px;height: 50px;background: #141414;font-size: 25px;padding: 0;z-index: 3;">
     </button>
     <div style="flex-direction: column;display: flex;">
       <div id="hostDiv"> </div>
@@ -432,12 +437,12 @@
           style="color: #aaa;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;width: 100%;display: inline-block;"></a>
       </div>
       <div style="margin-left: 25px;">
-        <button style="background: blue;" onclick="copyTextToClipboard(window.location.href)">Copy Link</button>
-        <button onclick="window.open(window.location.href, '_blank')">Open Link</button>
+        <button id="copyLink" class="here" style="background: blue;">Copy Link</button>
+        <button class="here" onclick="window.open(document.getElementById('meetLink').href, '_blank')">Open Link</button>
       </div>
       <br />
       <div style="display:flex;justify-content:space-between;align-items: center;margin: 0px 25px 10px 25px;">
-        <button id="micBtn" onclick="{
+        <button class="here" id="micBtn" onclick="{
           let el = document.getElementById('micBtn') 
           el.classList.toggle('changex');
           el.classList.contains('changex') 
@@ -459,7 +464,7 @@
       </div>
 
       <div style="display:flex;justify-content:space-between;align-items: center;margin: 0px 25px 10px 25px;">
-        <button id="cameraBtn" onclick="{
+        <button class="here" id="cameraBtn" onclick="{
           let el = document.getElementById('cameraBtn') 
           el.classList.toggle('changex');
           el.classList.contains('changex') 
@@ -482,20 +487,20 @@
 
 
       <div style="margin: 20px;margin-bottom: 0;">Live Chat</div>
-      <div id="chatDiv" data-simplebar>
+      <div id="chatDiv" style="z-index: 1;overflow-y: unset; height: 50vh;scroll-behavior: smooth;">
         <!-- chat message -->
-
-        <div style="margin: 5px; display:flex;position: relative;">
+        <div id="chatMsg" style="margin: 5px; display:none;position: relative;">
           <!-- photo/emoji -->
-          <div
-            style="background: #333;height: 60px;width: 60px;z-index: 2;position: absolute; margin-top: 20.5px;border-radius: 50%;">
+          <div id="sEmoji"
+            style="background: #333;height: 60px;width: 60px;z-index: 2;position: absolute; margin-top: 20.5px;border-radius: 50%;display : flex;justify-content: center;align-items: center;">
           </div>
           <div
             style="background: #141414;min-height: 80px;max-height:200px;overflow-y:auto;overflow-x:none;width: 300px;z-index: 1;margin: 10px;margin-left: 50px;border-radius: 10px;">
-            <div
+            <div id="sName"
               style="color:#6996ff;font-size: 18px;margin: 15px;margin-left: 20px;margin-bottom:0;overflow:hidden;white-space: nowrap;text-overflow: ellipsis;width: 200px;display: inline-block;">
               Sender Name</div>
-            <p style="color:white;font-size: 18px;margin: 10px;margin-left: 20px;margin-top:0px;margin-bottom: 18px;">
+            <p id="sMsg"
+              style="color:white;font-size: 18px;margin: 10px;margin-left: 20px;margin-top:0px;margin-bottom: 18px;">
               Messages
             </p>
           </div>

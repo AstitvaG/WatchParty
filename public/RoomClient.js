@@ -291,7 +291,7 @@ class RoomClient {
             // console.log(newChat)
             newChat.querySelector("#sMsg").innerText  = data.Msg
             newChat.querySelector("#sName").innerHTML  = data.Name
-            newChat.querySelector("#sEmoji").innerHTML  = emojis[Math.floor(data.Name.hashCode()) % emojis.length];
+            newChat.querySelector("#sEmoji").innerHTML  = data.Emoji;
             console.log(newChat.querySelector("#sMsg"))
             newChat.id = Math.random(1000);
             // document.getElementById('chatDiv').appe
