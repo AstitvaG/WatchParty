@@ -284,6 +284,22 @@ class RoomClient {
             }
         })
 
+        this.socket.on('sentMsg', data => {
+            console.log("sentMsg received", data)
+            var newChat = chatMsg.cloneNode(true)
+            newChat.style.display = "flex"
+            // console.log(newChat)
+            newChat.querySelector("#sMsg").innerText  = data.Msg
+            newChat.querySelector("#sName").innerHTML  = data.Name
+            newChat.querySelector("#sEmoji").innerHTML  = emojis[Math.floor(data.Name.hashCode()) % emojis.length];
+            console.log(newChat.querySelector("#sMsg"))
+            newChat.id = Math.random(1000);
+            // document.getElementById('chatDiv').appe
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+            chatDiv.append(newChat);
+            chatDiv.scrollTop = chatDiv.scrollHeight;
+        })
+
         this.socket.on('disconnect', function () {
             this.exit(true)
         }.bind(this))

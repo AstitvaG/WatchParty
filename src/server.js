@@ -310,6 +310,15 @@ io.on('connection', socket => {
 
         callback('successfully exited room')
     })
+
+    socket.on('sendMsg', ({ Name, Room, Msg }) => {
+        let room = roomList.get(socket.room_id)
+        if (room) {
+            room.broadCast(socket, 'sentMsg', { Name, Msg })
+            console.log("broadcasting msg: " + Msg + " sent by " + Name);
+        }
+    })
+
 })
 
 function room() {

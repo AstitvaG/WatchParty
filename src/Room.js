@@ -181,6 +181,7 @@ module.exports = class Room {
     }
 
     broadCast(socket_id, name, data) {
+        console.log("Brodcating", name, data)
         for (let otherID of Array.from(this.peers.keys()).filter(id => id !== socket_id)) {
             this.send(otherID, name, data)
         }

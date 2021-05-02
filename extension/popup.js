@@ -21,26 +21,60 @@ startStreaming.addEventListener("click", async () => {
 	}, () => libsLoaded = true)));
 });
 
+let makeRequest = (method, url) => {
+	return new Promise(function (resolve, reject) {
+		let xhr = new XMLHttpRequest();
+		xhr.open(method, url);
+		xhr.onload = function () {
+			if (this.status >= 200 && this.status < 300) {
+				resolve(xhr.response);
+			} else {
+				reject({
+					status: this.status,
+					statusText: xhr.statusText
+				});
+			}
+		};
+		xhr.onerror = function () {
+			reject({
+				status: this.status,
+				statusText: xhr.statusText
+			});
+		};
+		xhr.send();
+	});
+}
+let chatHtml = null;
+(async () => {
+	chatHtml = await makeRequest("GET", chrome.runtime.getURL("chatBox.html"));
+	console.log(chatHtml);
+})();
+
 
 // Runs when extension starts streaming
 chrome.runtime.onMessage.addListener(
-	function (req, sender, resp) {
-		document.room_id = req.room_id
-		let roomInp = document.getElementById("roomInp")
-		roomInp.value = req.room_id
-		roomInp.parentElement.classList.toggle('hidden');
-		document.getElementById("startStreaming").classList.toggle('hidden');
-		document.getElementById("joinExisting").classList.toggle('hidden');
-		document.getElementById("copyLink").classList.toggle('hidden');
+	async (req, sender, resp) => {
+		if (req.cmd == "sendInfo") {
+			document.room_id = req.room_id
+			let roomInp = document.getElementById("roomInp")
+			roomInp.value = req.room_id
+			roomInp.parentElement.classList.toggle('hidden');
+			document.getElementById("startStreaming").classList.toggle('hidden');
+			document.getElementById("joinExisting").classList.toggle('hidden');
+			document.getElementById("copyLink").classList.toggle('hidden');
+		}
+		else if (req.cmd == "load_html") {
+			resp(chatHtml);
+		}
 	}
 );
 
 joinExisting.addEventListener("click", async () => {
-	window.open('http:\/\/10.1.102.27:3016', '_blank')
+	window.open('http:\/\/192.168.43.136:3016', '_blank')
 });
 
 document.getElementById("copyLink").addEventListener("click", async () => {
-	copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
+	copyTextToClipboard('http:\/\/192.168.43.136:3016\/' + document.room_id)
 });
 
 
@@ -76,7 +110,7 @@ document.getElementById("copyLink").addEventListener("click", async () => {
 			document.getElementById("startStreaming").classList.toggle('hidden');
 			document.getElementById("joinExisting").classList.toggle('hidden');
 			document.getElementById("copyLink").classList.toggle('hidden');
-			copyTextToClipboard('http:\/\/10.1.102.27:3016\/' + document.room_id)
+			copyTextToClipboard('http:\/\/192.168.43.136:3016\/' + document.room_id)
 		}
 	});
 })()
