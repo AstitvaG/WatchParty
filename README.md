@@ -74,7 +74,7 @@ WatchPlus
 > Highly recommended to Use Chromium
 - Go to [`chrome://extensions`](chrome://extensions)
 - Then click `Load Unpacked`
-- Go to `WatchParty/extension` in browse folder and select
+- Go to `WatchParty/extension` in the browse folder and select
 - Enable the extension if disabled and then pin the extension to the title bar
 - Development:
   - The `content.js` logs will be displayed in the website console itself
@@ -93,7 +93,7 @@ WatchPlus
 - [x] Host/Client name handling
 - [x] Seperate rooms
 - [x] Extension UX for rooms
-- [ ] Chat part
+- [x] Chat part
 - [x] Chat microinteractions
 - [x] Play/Pause part
 - [x] Jump to time and Slider part
@@ -102,10 +102,10 @@ WatchPlus
 - [ ] Deployment and Testing
 
 ### Known issues
-- [x] There is a de-sync in audio video stream from host
-- [x] When directly sharing a video, and either its src changes (ex. yt ads) or the video ends, transmission freezes
-- [ ] Extension popup closes when share popup comes, thus link not copied.
-- [x] Site on accessable even from within the same network
+- [x] There is a de-sync in the audio-video stream from the host
+- [x] When directly sharing a video, and either its src changes (ex. youtube ads) or the video ends, transmission freezes
+- [x] Extension popup closes when share popup comes, thus link not copied.
+- [x] Site on accessible even from within the same network
 - [ ] Still on HTTP, so extension can't be run on websites directly.
 - [ ] Noise in audio when stream changed multiple times
 
@@ -118,10 +118,10 @@ WatchPlus
 
 ## Deployment
 
-- in `config.js` replace the `announcedIP` with your public ip address of the server (important) and modify the port you want to serve it in.
-- add firewall rules of the port of the webpage (default 3016) and the rtc connections (default udp 10000-10100) for the machine.
+- in `config.js` replace the `announcedIP` with your public IP address of the server (important) and modify the port you want to serve it in.
+- add firewall rules of the port of the webpage (default 3016) and the RTC connections (default UDP 10000-10100) for the machine.
 
 
 Note : 
-- Best to run the project on a linux system as the mediasoup installation could have issues by installing on windows. If you have a windows system consider installing WSL to be able to run it. 
+- Best to run the project on a Linux system as the mediasoup installation could have issues by installing on windows. If you have a windows system consider installing WSL to be able to run it. 
 - [installing wsl on windows 10](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
