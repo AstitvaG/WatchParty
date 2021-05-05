@@ -1,4 +1,34 @@
 # WatchParty
+An extension that lets you watch your favourite Movies, TV Series, and much more with your friends and family.  
+It works on any of your streaming services like Netflix, Prime Video, Hulu, YouTube, or any other.  
+And one more thing, 
+```
+ONLY THE HOST IS REQUIRED TO HAVE A SUBSCRIPTION
+```
+
+## Running the code
+
+### Chrome Extension
+> Highly recommended to Use Chromium
+- Go to [`chrome://extensions`](chrome://extensions)
+- Then click `Load Unpacked`
+- Go to `WatchParty/extension` in the browse folder and select
+- Enable the extension if disabled and then pin the extension to the title bar
+- Development:
+  - The `content.js` logs will be displayed in the website console itself
+  - The logs of `popup.js` can be shown by: Right Click > Inspect pop-up > Console
+
+### Backend and Frontend
+- run `npm install` then `npm start` to run the application. Then open your browser at `http://localhost:3016` or your own defined port/url in the config file.
+- (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem` `ssl/cert.pem` certificates with your own.
+
+### Currently, for running on websites,
+- Type `chrome://settings/content/insecureContent` in chrome URL bar.
+- Select `Add`
+- Now add the base Url of the website.
+  - Ex for youtube: `[*.]youtube.com`
+- Then start streaming on that website using the extension
+
 
 ## Directory Structure
 ```
@@ -68,22 +98,6 @@ WatchPlus
     └── index.ejs
 ```
 
-## Running the code
-
-### Chrome Extension
-> Highly recommended to Use Chromium
-- Go to [`chrome://extensions`](chrome://extensions)
-- Then click `Load Unpacked`
-- Go to `WatchParty/extension` in the browse folder and select
-- Enable the extension if disabled and then pin the extension to the title bar
-- Development:
-  - The `content.js` logs will be displayed in the website console itself
-  - The logs of `popup.js` can be shown by: Right Click > Inspect pop-up > Console
-
-### Backend and Frontend
-- run `npm install` then `npm start` to run the application. Then open your browser at `https://localhost:3016` or your own defined port/url in the config file.
-- (optional) edit the `src/config.js` file according to your needs and replace the `ssl/key.pem` `ssl/cert.pem` certificates with your own.
-
 ## Work left
 - [x] Mesh topology peer-to-peer network :: Check branch `Mesh_Network`
 - [x] Making extension
@@ -107,14 +121,8 @@ WatchPlus
 - [x] Extension popup closes when share popup comes, thus link not copied.
 - [x] Site on accessible even from within the same network
 - [ ] Still on HTTP, so extension can't be run on websites directly.
-- [x] Noise in audio when stream changed multiple times
-
-### Currently, for running on websites,
-- Type `chrome://settings/content/insecureContent` in chrome URL bar.
-- Select `Add`
-- Now add the base Url of the website.
-  - Ex for youtube: `[*.]youtube.com`
-- Then start streaming on that website using the extension
+- [ ] Netflix `seekto` doesn't seem to work.
+- [ ] Noise in audio when stream changed multiple times
 
 ## Deployment
 
