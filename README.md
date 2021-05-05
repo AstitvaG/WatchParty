@@ -6,7 +6,7 @@ And one more thing,
 ONLY THE HOST IS REQUIRED TO HAVE A SUBSCRIPTION
 ```
 
-## Running the code
+## Installation and Usage
 
 ### Chrome Extension
 > Highly recommended to Use Chromium
